@@ -1,22 +1,38 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
 import React from "react";
-import { SafeAreaView, ScrollView, StatusBar, Text } from "react-native";
+import { Text, View } from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
-function App(): React.JSX.Element {
+
+const Drawer = createDrawerNavigator();
+
+const HomeScreen = () => {
+  return (
+    <View>
+      <Text>Home Screen</Text>
+    </View>
+  );
+}
+
+const DetailsScreen = () => {
+  return (
+    <View>
+      <Text>Details Screen</Text>
+    </View>
+  );
+}
+
+
+const App = () => {
 
   return (
-    <SafeAreaView>
-      <StatusBar />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <Text>Test</Text>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Details" component={DetailsScreen} />
+      </Drawer.Navigator>
+      </NavigationContainer>
   );
 }
 
