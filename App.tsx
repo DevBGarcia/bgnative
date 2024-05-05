@@ -15,14 +15,21 @@ const HomeScreen = () => {
   );
 }
 
-const DetailsScreen = () => {
+const ProfileScreen = () => {
   return (
     <View>
-      <Text>Details Screen</Text>
+      <Text>Profile Screen</Text>
     </View>
   );
 }
 
+const SettingsScreen = () => {
+  return (
+    <View>
+      <Text>Settings Screen</Text>
+    </View>
+  );
+}
 
 const App = () => {
 
@@ -30,7 +37,8 @@ const App = () => {
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Home">
         <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Details" component={DetailsScreen} />
+        <Drawer.Screen name="Profile" component={ProfileScreen} />
+        <Drawer.Screen name="Settings" component={SettingsScreen} />
       </Drawer.Navigator>
       </NavigationContainer>
   );
