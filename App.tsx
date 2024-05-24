@@ -35,10 +35,10 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
+      <Drawer.Navigator initialRouteName="ProfileScreen">
+        {/* <Drawer.Screen name="Home" component={HomeScreen} /> */}
         <Drawer.Screen name="Profile" component={ProfileScreen} />
-        <Drawer.Screen name="Settings" component={SettingsScreen} />
+        {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}
       </Drawer.Navigator>
       </NavigationContainer>
   );
