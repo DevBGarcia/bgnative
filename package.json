@@ -8,7 +8,11 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "start:android": "concurrently \"npm run start\" \"npm run android\""
+    "start:windows-android": "concurrently \"npm run start\" \"npm run android\"",
+    "start:pod-install": "cd ios && pod install && cd ..",
+    "start:macos-ios": "react-native run-ios",
+    "windows-checkdevices": "adb devices",
+    "macos-checkdevices": "xcrun simctl list devices"
   },
   "dependencies": {
     "@react-navigation/drawer": "^6.6.15",
