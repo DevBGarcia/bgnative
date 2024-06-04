@@ -3,5 +3,6 @@ module.exports = {
   extends: '@react-native',
   rules: {
     'prettier/prettier': 'off',
+    'react-hooks/exhaustive-deps': 'warn',
   },
 };
