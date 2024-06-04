@@ -15,6 +15,7 @@
     "macos-checkdevices": "xcrun simctl list devices"
   },
   "dependencies": {
+    "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",

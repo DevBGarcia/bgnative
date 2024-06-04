@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, Button, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Text, View, Button, Alert, AppState } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
+import PushNotification from 'react-native-push-notification';
 
 type TimerProps = {
   initialSeconds?: number;
@@ -8,23 +10,36 @@ type TimerProps = {
 export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   const [seconds, setSeconds] = useState(initialSeconds);
   const [isActive, setIsActive] = useState(false);
+  const [appState, setAppState] = useState(AppState.currentState);
+  const intervalId = useRef<number | null>(null);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    const appStateListener = AppState.addEventListener('change', handleAppStateChange);
 
+    return () => {
+        appStateListener.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     if (isActive && seconds > 0) {
-      interval = setInterval(() => {
-        console.log('BG - interval called - seconds:', seconds);
+        intervalId.current = BackgroundTimer.setInterval(() => {
         setSeconds((currentSeconds) => {
           if (currentSeconds === 1) {
-            clearInterval(interval!);
-            Alert.alert(
+            BackgroundTimer.clearInterval(intervalId.current!);
+            if (appState === 'active') {
+              Alert.alert(
                 'Timer Finished',
                 'The countdown has finished.',
                 [
-                  { text: "Reset", onPress: reset},
+                  { text: "Reset", onPress: reset },
                 ]
               );
+            } else {
+              PushNotification.localNotification({
+                message: 'Timer Finished',
+              });
+            }
             return 0;
           } else {
             return currentSeconds - 1;
@@ -32,12 +47,15 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
         });
       }, 1000);
     } else {
-      clearInterval(interval!);
+      BackgroundTimer.clearInterval(intervalId.current!);
     }
-    return () => clearInterval(interval!);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, seconds]);
 
+    return () => BackgroundTimer.clearInterval(intervalId.current!);
+  }, [isActive, seconds, appState]);
+
+  const handleAppStateChange = (nextAppState) => {
+    setAppState(nextAppState);
+  };
 
   const reset = () => {
     setSeconds(initialSeconds);
