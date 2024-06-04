@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, Alert, AppState } from 'react-native';
+import { Text, View, Button, Alert, AppState, AppStateStatus } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 
@@ -12,6 +12,8 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   const [isActive, setIsActive] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
   const intervalId = useRef<number | null>(null);
+
+  console.log('BG - appState', appState);
 
   useEffect(() => {
     const appStateListener = AppState.addEventListener('change', handleAppStateChange);
@@ -53,7 +55,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
     return () => BackgroundTimer.clearInterval(intervalId.current!);
   }, [isActive, seconds, appState]);
 
-  const handleAppStateChange = (nextAppState) => {
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
     setAppState(nextAppState);
   };
 
@@ -65,10 +67,12 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   return (
     <View>
       <Text>Time remaining: {seconds}</Text>
-      <Button
-        onPress={() => setIsActive(!isActive)} 
-        title={isActive ? 'Pause' : seconds === initialSeconds ? 'Start' : 'Resume'}
-      />
+      {seconds > 0 &&
+        <Button
+            onPress={() => setIsActive(!isActive)} 
+            title={isActive ? 'Pause' : seconds === initialSeconds ? 'Start' : 'Resume'}
+        />
+      }
       <Button onPress={reset} title="Reset" />
     </View>
   );
