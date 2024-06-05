@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, Button, Alert, AppState, AppStateStatus } from 'react-native';
+import { Text, View, Button, Alert, AppState, AppStateStatus } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
-import { GlobalStyles } from '../styles/GlobalStyles';
-import { formatTime } from '../utils/FormatTime';
 
 type TimerProps = {
   initialSeconds?: number;
@@ -67,8 +65,8 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   };
 
   return (
-    <>
-      <Text style={GlobalStyles.h1}>{formatTime(seconds)}</Text>
+    <View>
+      <Text>Time remaining: {seconds}</Text>
       {seconds > 0 &&
         <Button
             onPress={() => setIsActive(!isActive)}
@@ -76,6 +74,6 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
         />
       }
       <Button onPress={reset} title="Reset" />
-    </>
+    </View>
   );
 };
