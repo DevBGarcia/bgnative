@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, Button, Alert, AppState, AppStateStatus } from 'react-native';
+import { Text, Alert, AppState, AppStateStatus } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { formatTime } from '../utils/FormatTime';
+import IconButton from './IconButton';
 
 type TimerProps = {
   initialSeconds?: number;
@@ -55,6 +56,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
     }
 
     return () => BackgroundTimer.clearInterval(intervalId.current!);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, seconds, appState]);
 
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -66,16 +68,26 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
     setIsActive(false);
   };
 
-  return (
+return (
     <>
-      <Text style={GlobalStyles.h1}>{formatTime(seconds)}</Text>
-      {seconds > 0 &&
-        <Button
-            onPress={() => setIsActive(!isActive)}
-            title={isActive ? 'Pause' : seconds === initialSeconds ? 'Start' : 'Resume'}
-        />
-      }
-      <Button onPress={reset} title="Reset" />
+        <Text style={GlobalStyles.h1}>{formatTime(seconds)}</Text>
+         <IconButton
+            isDisabled={seconds <= 0}
+            IconButtonIconProps={{
+                    name: isActive ? 'pause-circle-outline' : 'play-circle-outline',
+            }}
+            IconButtonTouchableOpacityProps={{
+                onPress: () => setIsActive((prev) => !prev),
+            }}
+         />
+         <IconButton
+            IconButtonIconProps={{
+                    name: 'reload-circle-outline',
+            }}
+            IconButtonTouchableOpacityProps={{
+                onPress: reset,
+            }}
+         />
     </>
-  );
+);
 };
