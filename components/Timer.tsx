@@ -34,7 +34,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
                 'Timer Finished',
                 'The countdown has finished.',
                 [
-                  { text: "Reset", onPress: reset },
+                  { text: 'Reset', onPress: reset },
                 ]
               );
             } else {
@@ -69,7 +69,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
       <Text>Time remaining: {seconds}</Text>
       {seconds > 0 &&
         <Button
-            onPress={() => setIsActive(!isActive)} 
+            onPress={() => setIsActive(!isActive)}
             title={isActive ? 'Pause' : seconds === initialSeconds ? 'Start' : 'Resume'}
         />
       }
