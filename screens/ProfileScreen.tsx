@@ -4,7 +4,7 @@ import { GlobalStyles } from '../styles/GlobalStyles';
 
 export const ProfileScreen = () => {
   return (
-    <View style={GlobalStyles.ScreenContainer}>
+    <View style={GlobalStyles.screenContainer}>
       <Text>Profile Screen</Text>
     </View>
   );

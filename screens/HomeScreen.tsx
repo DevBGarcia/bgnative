@@ -5,7 +5,7 @@ import { Timer } from '../components/Timer';
 
 export const HomeScreen = () => {
     return (
-        <View style={GlobalStyles.ScreenContainer}>
+        <View style={GlobalStyles.screenContainer}>
             <Timer/>
         </View>
     );
