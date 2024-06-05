@@ -13,7 +13,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   const [appState, setAppState] = useState(AppState.currentState);
   const intervalId = useRef<number | null>(null);
 
-  console.log('BG - appState', appState);
+  console.log('BG - seconds', seconds);
 
   useEffect(() => {
     const appStateListener = AppState.addEventListener('change', handleAppStateChange);
