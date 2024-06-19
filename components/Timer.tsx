@@ -21,6 +21,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   const navigation = useNavigation();
 
   console.log('BG - seconds', seconds);
+  console.log('BG - appState ', appState);
 
   useEffect(() => {
     const appStateListener = AppState.addEventListener('change', handleAppStateChange);
@@ -46,6 +47,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
               );
             } else {
               PushNotification.localNotification({
+                channelId: 'channel-id',
                 message: 'Timer Finished',
               });
             }
