@@ -23,13 +23,18 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   console.log('BG - seconds', seconds);
   console.log('BG - appState ', appState);
 
-  useEffect(() => {
-    const appStateListener = AppState.addEventListener('change', handleAppStateChange);
+useEffect(() => {
+  // Define the function inside the effect to ensure it has the most current behavior
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
+    setAppState(nextAppState);
+  };
 
-    return () => {
-      appStateListener.remove();
-    };
-  }, []);
+  // Subscribe to AppState changes
+  const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+  // Return a cleanup function that removes the event listener
+  return () => subscription.remove();
+}, []);
 
   useEffect(() => {
     if (isActive && seconds > 0) {
@@ -58,10 +63,10 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
         });
       }, 1000);
     } else {
-      BackgroundTimer.clearInterval(intervalId.current!);
+      // BackgroundTimer.clearInterval(intervalId.current!);
     }
 
-    return () => BackgroundTimer.clearInterval(intervalId.current!);
+    // return () => BackgroundTimer.clearInterval(intervalId.current!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, seconds, appState]);
 
