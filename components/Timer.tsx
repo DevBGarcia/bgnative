@@ -63,16 +63,12 @@ useEffect(() => {
         });
       }, 1000);
     } else {
-      // BackgroundTimer.clearInterval(intervalId.current!);
+      BackgroundTimer.clearInterval(intervalId.current!);
     }
 
-    // return () => BackgroundTimer.clearInterval(intervalId.current!);
+    return () => BackgroundTimer.clearInterval(intervalId.current!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, seconds, appState]);
-
-  const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    setAppState(nextAppState);
-  };
 
   const reset = () => {
     setSeconds(initialSeconds);
