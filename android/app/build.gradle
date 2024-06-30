@@ -104,6 +104,9 @@ android {
     }
 }
 
+repositories {
+  mavenCentral()
+}
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
@@ -117,8 +120,11 @@ dependencies {
     implementation project(':react-native-vector-icons')
 
     // Flipper dependencies
-    debugImplementation 'com.facebook.flipper:flipper:${FLIPPER_VERSION}'
-    debugImplementation 'com.facebook.soloader:soloader:0.10.1'
+    debugImplementation('com.facebook.flipper:flipper:0.35.0') {
+        exclude group:'com.facebook.fbjni'
+    }
+
+    debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.125.0'
 
 }
 

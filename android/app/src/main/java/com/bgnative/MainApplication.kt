@@ -15,6 +15,7 @@ import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.flipper.android.AndroidFlipperClient
 import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.core.FlipperPlugin
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 
 class MainApplication : Application(), ReactApplication {
 
@@ -46,7 +47,7 @@ class MainApplication : Application(), ReactApplication {
       // Initialize Flipper
     if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
         val client = AndroidFlipperClient.getInstance(this)
-
+        client.addPlugin(NetworkFlipperPlugin())
         client.start()
     }
   }

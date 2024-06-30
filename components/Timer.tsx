@@ -6,7 +6,8 @@ import { GlobalStyles } from '../styles/GlobalStyles';
 import { formatTime } from '../utils/FormatTime';
 import IconButton from './IconButton';
 import { useNavigation } from '@react-navigation/native';
-import { TIMERS_NAVIGATOR_SCREEN_NAMES } from '../navigators/TimersNavigator';
+import { StackParamList } from '../navigators/TimersNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 
 type TimerProps = {
@@ -18,10 +19,7 @@ export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
   const [isActive, setIsActive] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
   const intervalId = useRef<number | null>(null);
-  const navigation = useNavigation();
-
-  console.log('BG - seconds', seconds);
-  console.log('BG - appState ', appState);
+  const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
 useEffect(() => {
   // Define the function inside the effect to ensure it has the most current behavior
@@ -109,7 +107,7 @@ useEffect(() => {
             name: 'pencil-circle-outline',
           }}
           IconButtonTouchableOpacityProps={{
-            onPress: () => navigation.navigate(TIMERS_NAVIGATOR_SCREEN_NAMES.EditTimer),
+            onPress: () => navigation.navigate('EditTimer'),
           }}
         />
       </View>
