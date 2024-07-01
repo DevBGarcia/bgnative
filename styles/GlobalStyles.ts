@@ -7,11 +7,14 @@ export const GlobalStyles = StyleSheet.create({
     padding: 24,
   },
   h1: {
-    fontSize: 32,
+    fontSize: 56,
     fontWeight: 'bold',
   },
   h2: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
+  },
+  backButtonStyle:{
+    alignSelf:'flex-start',
   },
 });

@@ -1,5 +1,4 @@
-// useStore.js
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 export type Timer = {
@@ -16,20 +15,13 @@ export const DEFAULT_TIMER_PARAMS: Timer = {
 
 // Define a type for the state
 type State = {
-  selectedTimer: Timer | null,
-  timerList: Timer[],
+  selectedTimer: Timer,
   setSelectedTimer: (timer: Timer) => void,
-  addTimer: (timer: Timer) => void,
-  deleteTimer: (timer: Timer) => void,
 };
 
 export const useTimerStore = create<State>()(
   devtools(set => ({
-    selectedTimer: null,
-    timerList: [],
+    selectedTimer: DEFAULT_TIMER_PARAMS,
     setSelectedTimer: (timer: Timer) => set({ selectedTimer: timer }),
-    addTimer: (timer: Timer) => set(state => ({ timerList: [...state.timerList, timer] })),
-    deleteTimer: (timer: Timer) => set(state => ({ timerList: state.timerList.filter(t => t !== timer) })),
   }), {name: 'TimerStore'})
 );
-

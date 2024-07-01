@@ -7,7 +7,7 @@ import { TimerListScreen } from '../screens/TimerListScreen';
 
 export type TimerScreenNames =  'Timer' | 'EditTimer' | 'TimerList'
 
-export type RootStackParamList = {
+export type StackParamList = {
   Timer: undefined,
   EditTimer: undefined,
   TimerList: undefined,

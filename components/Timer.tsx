@@ -8,14 +8,13 @@ import IconButton from './IconButton';
 import { useNavigation } from '@react-navigation/native';
 import { StackParamList } from '../navigators/TimersNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useTimerStore } from '../globalStore/timerStore';
 
+export const Timer = () => {
 
-type TimerProps = {
-  initialSeconds?: number;
-};
+  const { selectedTimer } = useTimerStore();
 
-export const Timer = ({ initialSeconds = 5 }: TimerProps) => {
-  const [seconds, setSeconds] = useState(initialSeconds);
+  const [seconds, setSeconds] = useState(selectedTimer.intervalTime);
   const [isActive, setIsActive] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
   const intervalId = useRef<number | null>(null);
@@ -69,7 +68,7 @@ useEffect(() => {
   }, [isActive, seconds, appState]);
 
   const reset = () => {
-    setSeconds(initialSeconds);
+    setSeconds(selectedTimer.intervalTime);
     setIsActive(false);
   };
 
@@ -96,7 +95,7 @@ useEffect(() => {
         <IconButton
           isDisabled={seconds <= 0}
           IconButtonIconProps={{
-            name: isActive ? 'pause-circle-outline' : 'play-circle-outline',
+            name: isActive ? 'pause' : 'play',
           }}
           IconButtonTouchableOpacityProps={{
             onPress: () => setIsActive((prev) => !prev),
@@ -104,7 +103,7 @@ useEffect(() => {
         />
         <IconButton
           IconButtonIconProps={{
-            name: 'pencil-circle-outline',
+            name: 'pencil',
           }}
           IconButtonTouchableOpacityProps={{
             onPress: () => navigation.navigate('EditTimer'),
