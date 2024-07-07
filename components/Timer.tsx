@@ -119,8 +119,6 @@ useEffect(() => {
                     channelId: 'channel-id',
                     title: 'Timer Finished',
                     message: 'Your timer has finished. Great job!', // Customize your message
-                    playSound: true,
-                    soundName: 'default',
                   });
                 }
                 return getInitialSeconds('finished');
