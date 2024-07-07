@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import IconButton from '../components/IconButton';
 import { useNavigation } from '@react-navigation/native';
@@ -22,6 +22,7 @@ export const TimerEditScreen = () => {
                     }}
                 />
             </View>
+            <Text> Timer Edit </Text>
         </View>
     );
 };

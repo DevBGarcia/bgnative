@@ -186,6 +186,10 @@ const reset = () => {
         <Dialog.Button label="OK" onPress={() => {setShowFinishedDialog(false); reset(); }} />
       </Dialog.Container>
       <View style={styles.timerInfo}>
+        <Text style={styles.timerInfoFont}>Title: </Text>
+        <Text style={styles.timerInfoFont}>{selectedTimer.timerTitle}</Text>
+      </View>
+      <View style={styles.timerInfo}>
         <Text style={styles.timerInfoFont}>Current State: </Text>
         <Text style={styles.timerInfoFont}>{getHeaderText(timerState)}</Text>
       </View>

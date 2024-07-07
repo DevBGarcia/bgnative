@@ -2,10 +2,10 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { GlobalStyles } from '../styles/GlobalStyles';
 
-export const ProfileScreen = () => {
+export const SoundboardScreen = () => {
   return (
     <View style={GlobalStyles.screenContainer}>
-      <Text>Profile Screen</Text>
+      <Text>Soundboard Screen</Text>
     </View>
   );
 };
