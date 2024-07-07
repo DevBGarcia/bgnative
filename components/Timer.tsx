@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Text, Alert, AppState, AppStateStatus, View, StyleSheet } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
-import { GlobalStyles } from '../styles/GlobalStyles';
 import { formatTime } from '../utils/FormatTime';
 import IconButton from './IconButton';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +12,9 @@ import { useTimerStore } from '../globalStore/timerStore';
 export const Timer = () => {
 
   const { selectedTimer } = useTimerStore();
+  console.log('BG - selectedTimer: ', selectedTimer);
 
+  const [currentRound, setCurrentRound] = useState(selectedTimer.intervalCount);
   const [seconds, setSeconds] = useState(selectedTimer.intervalTime);
   const [isActive, setIsActive] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
@@ -69,6 +70,7 @@ useEffect(() => {
 
   const reset = () => {
     setSeconds(selectedTimer.intervalTime);
+    setCurrentRound(selectedTimer.intervalCount);
     setIsActive(false);
   };
 
@@ -76,13 +78,36 @@ useEffect(() => {
     timerActionButtonsContainer: {
       flexDirection: 'row',
       gap: 8,
-      paddingVertical: 16,
     },
+    contentSection: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 32,
+      alignItems: 'center',
+    },
+    timerInfo:{
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent:'space-between',
+      gap: 16,
+      minWidth: 200,
+      maxWidth: 400,
+    },
+    timerInfoFont:{
+      fontSize: 24,
+    }
   });
 
   return (
-    <>
-      <Text style={GlobalStyles.h1}>{formatTime(seconds)}</Text>
+    <View style={styles.contentSection}>
+      <View style={styles.timerInfo}>
+        <Text style={styles.timerInfoFont}>Current Round:</Text>
+        <Text style={styles.timerInfoFont}>{currentRound}</Text>
+      </View>
+      <View style={styles.timerInfo}>
+        <Text style={styles.timerInfoFont}>{isActive ? 'Live:' : 'Paused:'}</Text>
+        <Text style={styles.timerInfoFont}>{formatTime(seconds)}</Text>
+      </View>
       <View style={styles.timerActionButtonsContainer}>
         <IconButton
           IconButtonIconProps={{
@@ -110,6 +135,6 @@ useEffect(() => {
           }}
         />
       </View>
-    </>
+    </View>
   );
 };
