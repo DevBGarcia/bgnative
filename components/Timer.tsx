@@ -9,17 +9,67 @@ import { StackParamList } from '../navigators/TimersNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTimerStore } from '../globalStore/timerStore';
 
+type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
+
+type TimerStatusProps = {
+  timerState: TimerStates;
+  currentInterval: number;
+  secondsLeft: number;
+  isPaused: boolean;
+}
+
+export const TimerStatus = (props: TimerStatusProps) => {
+
+  const { selectedTimer } = useTimerStore();
+  const { timerState, currentInterval, secondsLeft, isPaused } = props;
+
+  if(isPaused){
+    if(currentInterval === 1 && timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime){
+      return (
+        <Text style={styles.initialStatusText}>
+          Press play to start.
+        </Text>
+      );
+    } else if(timerState === 'finished' && secondsLeft === 0){
+      return (
+        <Text style={styles.finishedStatusText}>
+          Finished! Reset to start again.
+        </Text>
+      );
+    }else{
+      return (
+        <Text style={styles.pausedStatusText}>
+          Paused!
+        </Text>
+      );
+    }
+  }else{
+    return (
+      <Text style={styles.liveStatusText}>
+        Live!
+      </Text>
+    );
+  }
+};
+
 export const Timer = () => {
 
   const { selectedTimer } = useTimerStore();
-  console.log('BG - selectedTimer: ', selectedTimer);
 
-  const [currentRound, setCurrentRound] = useState(selectedTimer.intervalCount);
-  const [seconds, setSeconds] = useState(selectedTimer.intervalTime);
-  const [isActive, setIsActive] = useState(false);
   const [appState, setAppState] = useState(AppState.currentState);
-  const intervalId = useRef<number | null>(null);
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
+  
+  // Define state variables
+  const [timerState, setTimerState] = useState<TimerStates>('warmup');
+  const [currentInterval, setCurrentInterval] = useState(1);
+  const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds(timerState));
+  const [isPaused, setIsPaused] = useState(true);
+
+
+  console.log('Timer State: ', timerState);
+  console.log('Current Interval: ', currentInterval);
+  console.log('Seconds Left: ', secondsLeft);
+  console.log('Is Paused: ', isPaused);
 
 useEffect(() => {
   // Define the function inside the effect to ensure it has the most current behavior
@@ -34,45 +84,139 @@ useEffect(() => {
   return () => subscription.remove();
 }, []);
 
-  useEffect(() => {
-    if (isActive && seconds > 0) {
-      intervalId.current = BackgroundTimer.setInterval(() => {
-        setSeconds((currentSeconds) => {
-          if (currentSeconds === 1) {
-            BackgroundTimer.clearInterval(intervalId.current!);
-            if (appState === 'active') {
-              Alert.alert(
-                'Timer Finished',
-                'The countdown has finished.',
-                [
-                  { text: 'Reset', onPress: reset },
-                ]
-              );
-            } else {
-              PushNotification.localNotification({
-                channelId: 'channel-id',
-                message: 'Timer Finished',
-              });
-            }
-            return 0;
-          } else {
-            return currentSeconds - 1;
+// Single useEffect for timer logic
+useEffect(() => {
+
+  const startTimer = () => {
+    BackgroundTimer.runBackgroundTimer(() => {
+      setSecondsLeft((prevSeconds: number) => {
+        if (prevSeconds > 0) {
+          return prevSeconds - 1;
+        } else {
+          // Change state when timer seconds reach 0
+          switch (timerState) {
+            case 'warmup':
+              setTimerState('active');
+              return getInitialSeconds('active');
+            case 'active':
+              if (currentInterval < selectedTimer.intervalCount) {
+                //More rounrs to go, set rest
+                setTimerState('rest');
+                return getInitialSeconds('rest');
+              } else {
+                // Last round finished
+                setTimerState('finished');
+                BackgroundTimer.stopBackgroundTimer(); // Stop the timer
+                setIsPaused(true);
+                return getInitialSeconds('finished');
+              }
+            case 'rest':
+              setCurrentInterval((prevInterval) => prevInterval + 1);
+              setTimerState('active');
+              return getInitialSeconds('active');
           }
-        });
-      }, 1000);
-    } else {
-      BackgroundTimer.clearInterval(intervalId.current!);
-    }
-
-    return () => BackgroundTimer.clearInterval(intervalId.current!);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, seconds, appState]);
-
-  const reset = () => {
-    setSeconds(selectedTimer.intervalTime);
-    setCurrentRound(selectedTimer.intervalCount);
-    setIsActive(false);
+        }
+        return getInitialSeconds(timerState);
+      });
+    }, 1000);
   };
+
+  if (!isPaused) {
+    startTimer();
+  } else {
+    BackgroundTimer.stopBackgroundTimer();
+  }
+
+  return () => {BackgroundTimer.stopBackgroundTimer()};
+}, [isPaused, timerState, currentInterval, secondsLeft]);
+
+  // Function to get initial seconds based on timer state
+function getInitialSeconds(state: TimerStates) {
+  switch (state) {
+    case 'warmup':
+      return selectedTimer.warmupTime;
+    case 'active':
+      return selectedTimer.intervalTime;
+    case 'rest':
+      return selectedTimer.restTime;
+    default:
+      return 0;
+  }
+}
+
+// Reset function to reset all states to initial
+const reset = () => {
+  setIsPaused(true);
+  setTimerState('warmup');
+  setCurrentInterval(1);
+  setSecondsLeft(getInitialSeconds('warmup'));
+};
+
+  const getHeaderText = (state: TimerStates) => {
+    switch (state) {
+      case 'warmup':
+        return 'Warmup';
+      case 'active':
+        return 'Active';
+      case 'rest':
+        return 'Rest';
+      case 'finished':
+        return 'Finished';
+    }
+  };
+
+  return (
+    <View style={styles.contentSection}>
+      <View style={styles.timerInfo}>
+        <Text style={styles.timerInfoFont}>Current State: </Text>
+        <Text style={styles.timerInfoFont}>{getHeaderText(timerState)}</Text>
+      </View>
+      <View style={styles.timerInfo}>
+        <Text style={styles.timerInfoFont}>Current Round:</Text>
+        <Text style={styles.timerInfoFont}>{currentInterval}</Text>
+      </View>
+      <View style={styles.timerInfo}>
+        <Text style={styles.timerInfoFont}>Time Left:</Text>
+        <Text style={styles.timerInfoFont}>{formatTime(secondsLeft)}</Text>
+      </View>
+      <View style={styles.timerActionButtonsContainer}>
+        <IconButton
+          IconButtonIconProps={{
+            name: 'reload',
+          }}
+          IconButtonTouchableOpacityProps={{
+            onPress: reset,
+          }}
+        />
+        <IconButton
+          isDisabled={secondsLeft <= 0}
+          IconButtonIconProps={{
+            name: !isPaused ? 'pause' : 'play',
+          }}
+          IconButtonTouchableOpacityProps={{
+            onPress: () => setIsPaused((prev) => !prev),
+          }}
+        />
+        <IconButton
+          IconButtonIconProps={{
+            name: 'pencil',
+          }}
+          IconButtonTouchableOpacityProps={{
+            onPress: () => navigation.navigate('EditTimer'),
+          }}
+        />
+      </View>
+      {/* Bottom section here for live/paused/start/ended status */}
+      <TimerStatus
+        timerState={timerState}
+        currentInterval={currentInterval}
+        secondsLeft={secondsLeft}
+        isPaused={isPaused}
+      />
+    </View>
+  );
+};
+
 
   const styles = StyleSheet.create({
     timerActionButtonsContainer: {
@@ -90,51 +234,30 @@ useEffect(() => {
       flexDirection: 'row',
       justifyContent:'space-between',
       gap: 16,
-      minWidth: 200,
-      maxWidth: 400,
+      minWidth: 256,
+      maxWidth: 256,
     },
     timerInfoFont:{
       fontSize: 24,
-    }
+    },
+    pausedStatusText:{
+      fontSize: 20,
+      color: 'red',
+      textAlign: 'center',
+    },
+    initialStatusText: {
+      fontSize: 20,
+      color: 'blue',
+      textAlign: 'center',
+    },
+    liveStatusText: {
+      fontSize: 20,
+      color: 'green',
+      textAlign: 'center',
+    },
+    finishedStatusText: {
+      fontSize: 20,
+      color: 'red',
+      textAlign: 'center',
+    },
   });
-
-  return (
-    <View style={styles.contentSection}>
-      <View style={styles.timerInfo}>
-        <Text style={styles.timerInfoFont}>Current Round:</Text>
-        <Text style={styles.timerInfoFont}>{currentRound}</Text>
-      </View>
-      <View style={styles.timerInfo}>
-        <Text style={styles.timerInfoFont}>{isActive ? 'Live:' : 'Paused:'}</Text>
-        <Text style={styles.timerInfoFont}>{formatTime(seconds)}</Text>
-      </View>
-      <View style={styles.timerActionButtonsContainer}>
-        <IconButton
-          IconButtonIconProps={{
-            name: 'reload',
-          }}
-          IconButtonTouchableOpacityProps={{
-            onPress: reset,
-          }}
-        />
-        <IconButton
-          isDisabled={seconds <= 0}
-          IconButtonIconProps={{
-            name: isActive ? 'pause' : 'play',
-          }}
-          IconButtonTouchableOpacityProps={{
-            onPress: () => setIsActive((prev) => !prev),
-          }}
-        />
-        <IconButton
-          IconButtonIconProps={{
-            name: 'pencil',
-          }}
-          IconButtonTouchableOpacityProps={{
-            onPress: () => navigation.navigate('EditTimer'),
-          }}
-        />
-      </View>
-    </View>
-  );
-};

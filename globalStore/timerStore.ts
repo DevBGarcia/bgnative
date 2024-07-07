@@ -5,12 +5,14 @@ export type Timer = {
   intervalTime: number,
   intervalCount: number,
   restTime: number,
+  warmupTime: number,
 }
 
 export const DEFAULT_TIMER_PARAMS: Timer = {
-  intervalTime: 180,
-  intervalCount: 5,
-  restTime: 60,
+  intervalTime: 5,
+  intervalCount: 2,
+  restTime: 3,
+  warmupTime: 2,
 }
 
 // Define a type for the state
