@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Text, Alert, AppState, AppStateStatus, View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, AppState, AppStateStatus, View, StyleSheet } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import { formatTime } from '../utils/FormatTime';
@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackParamList } from '../navigators/TimersNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTimerStore } from '../globalStore/timerStore';
+import Dialog from 'react-native-dialog';
+
 
 type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
 
@@ -65,6 +67,7 @@ export const Timer = () => {
   const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds(timerState));
   const [isPaused, setIsPaused] = useState(true);
 
+  const [showFinishedDialog, setShowFinishedDialog] = useState(false);
 
   console.log('Timer State: ', timerState);
   console.log('Current Interval: ', currentInterval);
@@ -108,6 +111,9 @@ useEffect(() => {
                 setTimerState('finished');
                 BackgroundTimer.stopBackgroundTimer(); // Stop the timer
                 setIsPaused(true);
+                if(appState === 'active'){
+                  setShowFinishedDialog(true);
+                }
                 return getInitialSeconds('finished');
               }
             case 'rest':
@@ -167,6 +173,11 @@ const reset = () => {
 
   return (
     <View style={styles.contentSection}>
+      <Dialog.Container visible={showFinishedDialog}>
+        <Dialog.Title>Timer Finished</Dialog.Title>
+        <Dialog.Description>Timer has finished. Press OK to reset.</Dialog.Description>
+        <Dialog.Button label="OK" onPress={() => {setShowFinishedDialog(false); reset(); }} />
+      </Dialog.Container>
       <View style={styles.timerInfo}>
         <Text style={styles.timerInfoFont}>Current State: </Text>
         <Text style={styles.timerInfoFont}>{getHeaderText(timerState)}</Text>

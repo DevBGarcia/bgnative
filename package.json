@@ -29,6 +29,7 @@
     "react": "18.2.0",
     "react-native": "0.74.2",
     "react-native-background-timer": "^2.4.1",
+    "react-native-dialog": "^9.3.0",
     "react-native-flipper": "^0.212.0",
     "react-native-gesture-handler": "^2.16.1",
     "react-native-push-notification": "^8.1.1",

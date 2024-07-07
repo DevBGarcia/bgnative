@@ -1,11 +1,12 @@
 <resources>
-
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
-        <!-- <item name="android:editTextBackground">@drawable/rn_edit_text_material</item> -->
         <item name="android:textColor">@android:color/black</item>
-
+        <!-- Other theme customizations -->
     </style>
 
+    <!-- Custom Dialog Theme -->
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColor">@android:color/holo_red_dark</item>
+        <!-- Customize your dialog theme here -->
+    </style>
 </resources>
