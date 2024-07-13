@@ -1,10 +1,10 @@
-import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { TimerScreen } from "../screens/TimerScreen";
-import { TimerEditScreen } from "../screens/TimerEditScreen";
-import { TimerListScreen } from "../screens/TimerListScreen";
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { TimerScreen } from '../screens/TimerScreen';
+import { TimerEditScreen } from '../screens/TimerEditScreen';
+import { TimerListScreen } from '../screens/TimerListScreen';
 
-export type TimerScreenNames = "Timer" | "EditTimer" | "TimerList";
+export type TimerScreenNames = 'Timer' | 'EditTimer' | 'TimerList';
 
 export type StackParamList = {
   Timer: undefined;
@@ -21,9 +21,18 @@ export const TimersNavigator = () => {
       initialRouteName="Timer"
       screenOptions={{ headerShown: false }} // Hide the header for all screens
     >
-      <Stack.Screen name={"Timer"} component={TimerScreen} />
-      <Stack.Screen name={"EditTimer"} component={TimerEditScreen} />
-      <Stack.Screen name={"TimerList"} component={TimerListScreen} />
+      <Stack.Screen
+        name={'Timer'}
+        component={TimerScreen}
+      />
+      <Stack.Screen
+        name={'EditTimer'}
+        component={TimerEditScreen}
+      />
+      <Stack.Screen
+        name={'TimerList'}
+        component={TimerListScreen}
+      />
     </Stack.Navigator>
   );
 };
