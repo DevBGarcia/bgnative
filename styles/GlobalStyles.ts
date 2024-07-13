@@ -6,7 +6,7 @@ export const GlobalStyles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
   },
-  backButtonStyle:{
-    alignSelf:'flex-start',
+  backButtonStyle: {
+    alignSelf: 'flex-start',
   },
 });

@@ -5,5 +5,6 @@ module.exports = {
     'prettier/prettier': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'exhaustive-deps': 'off',
+    'eol-last': 'off',
   },
 };
