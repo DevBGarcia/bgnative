@@ -56,23 +56,18 @@ export const TimerStatus = (props: TimerStatusProps) => {
 
 export const Timer = () => {
 
-  const { selectedTimer } = useTimerStore();
+const { selectedTimer } = useTimerStore();
 
-  const [appState, setAppState] = useState(AppState.currentState);
-  const navigation = useNavigation<StackNavigationProp<StackParamList>>();
-  
-  // Define state variables
-  const [timerState, setTimerState] = useState<TimerStates>('warmup');
-  const [currentInterval, setCurrentInterval] = useState(1);
-  const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds(timerState));
-  const [isPaused, setIsPaused] = useState(true);
+const [appState, setAppState] = useState(AppState.currentState);
+const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
-  const [showFinishedDialog, setShowFinishedDialog] = useState(false);
+// Define state variables
+const [timerState, setTimerState] = useState<TimerStates>('warmup');
+const [currentInterval, setCurrentInterval] = useState(1);
+const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds(timerState));
+const [isPaused, setIsPaused] = useState(true);
 
-  console.log('Timer State: ', timerState);
-  console.log('Current Interval: ', currentInterval);
-  console.log('Seconds Left: ', secondsLeft);
-  console.log('Is Paused: ', isPaused);
+const [showFinishedDialog, setShowFinishedDialog] = useState(false);
 
 useEffect(() => {
   // Define the function inside the effect to ensure it has the most current behavior
@@ -144,7 +139,7 @@ useEffect(() => {
 }, [isPaused, timerState, currentInterval, secondsLeft]);
 
   // Function to get initial seconds based on timer state
-function getInitialSeconds(state: TimerStates) {
+function getInitialSeconds(state: TimerStates): number{
   switch (state) {
     case 'warmup':
       return selectedTimer.warmupTime;
@@ -195,7 +190,7 @@ const reset = () => {
       </View>
       <View style={styles.timerInfo}>
         <Text style={styles.timerInfoFont}>Current Round:</Text>
-        <Text style={styles.timerInfoFont}>{currentInterval}</Text>
+        <Text style={styles.timerInfoFont}>{currentInterval} (of {selectedTimer.intervalCount})</Text>
       </View>
       <View style={styles.timerInfo}>
         <Text style={styles.timerInfoFont}>Time Left:</Text>
