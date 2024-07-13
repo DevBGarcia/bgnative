@@ -1,21 +1,21 @@
 {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "notebook.defaultFormatter": "esbenp.prettier-vscode",
-    // Additional Prettier settings
-    "editor.formatOnSave": true, // Automatically format files on save
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[javascriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    // Add other languages as needed
-    // Prettier configuration to force semicolons
-    "prettier.semi": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "notebook.defaultFormatter": "esbenp.prettier-vscode",
+  // Additional Prettier settings
+  "editor.formatOnSave": true, // Automatically format files on save
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // Add other languages as needed
+  // Prettier configuration to force semicolons
+  "prettier.semi": true
 }

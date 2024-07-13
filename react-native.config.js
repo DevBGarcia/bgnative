@@ -3,11 +3,11 @@
  * Which will end up in your bundle. To avoid that, create a react-native.config.js file at the root of your react-native project with:
  */
 module.exports = {
-    dependencies: {
-      'react-native-vector-icons': {
-        platforms: {
-          ios: null,
-        },
+  dependencies: {
+    "react-native-vector-icons": {
+      platforms: {
+        ios: null,
       },
     },
-  };
+  },
+};

@@ -1,10 +1,8 @@
-import React from 'react';
-import { RootNavigator } from './navigators/RootNavigator';
+import React from "react";
+import { RootNavigator } from "./navigators/RootNavigator";
 
 const App = () => {
-  return (
-    <RootNavigator/>
-  );
+  return <RootNavigator />;
 };
 
 export default App;

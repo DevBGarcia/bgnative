@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 export type Timer = {
   intervalTime: number;
@@ -14,7 +14,7 @@ export const DEFAULT_TIMER_PARAMS: Timer = {
   intervalCount: 2,
   restTime: 3,
   warmupTime: 2,
-  timerTitle: 'Default Timer',
+  timerTitle: "Default Timer",
 };
 
 // Define a type for the state
@@ -29,6 +29,6 @@ export const useTimerStore = create<State>()(
       selectedTimer: DEFAULT_TIMER_PARAMS,
       setSelectedTimer: (timer: Timer) => set({ selectedTimer: timer }),
     }),
-    { name: 'TimerStore' }
+    { name: "TimerStore" }
   )
 );

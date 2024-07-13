@@ -6,5 +6,6 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'off',
     'exhaustive-deps': 'off',
     'eol-last': 'off',
+    quotes: 'off',
   },
 };
