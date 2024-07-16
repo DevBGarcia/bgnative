@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Text, AppState, AppStateStatus, View, StyleSheet } from "react-native";
-import BackgroundTimer from "react-native-background-timer";
-import PushNotification from "react-native-push-notification";
-import { formatTime } from "../utils/FormatTime";
-import IconButton from "../components/IconButton";
-import { useNavigation } from "@react-navigation/native";
-import { StackParamList } from "../navigators/TimersNavigator";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useTimerStore } from "../globalStore/timerStore";
-import Dialog from "react-native-dialog";
-import { GlobalStyles } from "../styles/GlobalStyles";
+import React, { useState, useEffect } from 'react';
+import { Text, AppState, AppStateStatus, View, StyleSheet } from 'react-native';
+import BackgroundTimer from 'react-native-background-timer';
+import PushNotification from 'react-native-push-notification';
+import { formatTime } from '../utils/FormatTime';
+import IconButton from '../components/IconButton';
+import { useNavigation } from '@react-navigation/native';
+import { StackParamList } from '../navigators/TimersNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useTimerStore } from '../globalStore/timerStore';
+import Dialog from 'react-native-dialog';
+import { GlobalStyles } from '../styles/GlobalStyles';
 
-type TimerStates = "warmup" | "active" | "rest" | "finished";
+type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
 
 type TimerStatusProps = {
   timerState: TimerStates;
@@ -25,18 +25,10 @@ export const TimerStatus = (props: TimerStatusProps) => {
   const { timerState, currentInterval, secondsLeft, isPaused } = props;
 
   if (isPaused) {
-    if (
-      currentInterval === 1 &&
-      timerState === "warmup" &&
-      secondsLeft === selectedTimer.warmupTime
-    ) {
+    if (currentInterval === 1 && timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime) {
       return <Text style={styles.initialStatusText}>Press play to start.</Text>;
-    } else if (timerState === "finished" && secondsLeft === 0) {
-      return (
-        <Text style={styles.finishedStatusText}>
-          Finished! Reset to start again.
-        </Text>
-      );
+    } else if (timerState === 'finished' && secondsLeft === 0) {
+      return <Text style={styles.finishedStatusText}>Finished! Reset to start again.</Text>;
     } else {
       return <Text style={styles.pausedStatusText}>Paused!</Text>;
     }
@@ -52,7 +44,7 @@ export const TimerScreen = () => {
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
   // Define state variables
-  const [timerState, setTimerState] = useState<TimerStates>("warmup");
+  const [timerState, setTimerState] = useState<TimerStates>('warmup');
   const [currentInterval, setCurrentInterval] = useState(1);
   const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds(timerState));
   const [isPaused, setIsPaused] = useState(true);
@@ -66,10 +58,7 @@ export const TimerScreen = () => {
     };
 
     // Subscribe to AppState changes
-    const subscription = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     // Return a cleanup function that removes the event listener
     return () => subscription.remove();
@@ -85,35 +74,35 @@ export const TimerScreen = () => {
           } else {
             // Change state when timer seconds reach 0
             switch (timerState) {
-              case "warmup":
-                setTimerState("active");
-                return getInitialSeconds("active");
-              case "active":
+              case 'warmup':
+                setTimerState('active');
+                return getInitialSeconds('active');
+              case 'active':
                 if (currentInterval < selectedTimer.intervalCount) {
                   //More rounrs to go, set rest
-                  setTimerState("rest");
-                  return getInitialSeconds("rest");
+                  setTimerState('rest');
+                  return getInitialSeconds('rest');
                 } else {
                   // Last round finished
-                  setTimerState("finished");
+                  setTimerState('finished');
                   BackgroundTimer.stopBackgroundTimer(); // Stop the timer
                   setIsPaused(true);
-                  if (appState === "active") {
+                  if (appState === 'active') {
                     setShowFinishedDialog(true);
                   } else {
                     // Trigger push notification if appState is not 'active'
                     PushNotification.localNotification({
-                      channelId: "channel-id",
-                      title: "Timer Finished",
-                      message: "Your timer has finished. Great job!", // Customize your message
+                      channelId: 'channel-id',
+                      title: 'Timer Finished',
+                      message: 'Your timer has finished. Great job!', // Customize your message
                     });
                   }
-                  return getInitialSeconds("finished");
+                  return getInitialSeconds('finished');
                 }
-              case "rest":
+              case 'rest':
                 setCurrentInterval((prevInterval) => prevInterval + 1);
-                setTimerState("active");
-                return getInitialSeconds("active");
+                setTimerState('active');
+                return getInitialSeconds('active');
             }
           }
           return getInitialSeconds(timerState);
@@ -135,11 +124,11 @@ export const TimerScreen = () => {
   // Function to get initial seconds based on timer state
   function getInitialSeconds(state: TimerStates): number {
     switch (state) {
-      case "warmup":
+      case 'warmup':
         return selectedTimer.warmupTime;
-      case "active":
+      case 'active':
         return selectedTimer.intervalTime;
-      case "rest":
+      case 'rest':
         return selectedTimer.restTime;
       default:
         return 0;
@@ -149,21 +138,21 @@ export const TimerScreen = () => {
   // Reset function to reset all states to initial
   const reset = () => {
     setIsPaused(true);
-    setTimerState("warmup");
+    setTimerState('warmup');
     setCurrentInterval(1);
-    setSecondsLeft(getInitialSeconds("warmup"));
+    setSecondsLeft(getInitialSeconds('warmup'));
   };
 
   const getHeaderText = (state: TimerStates) => {
     switch (state) {
-      case "warmup":
-        return "Warmup";
-      case "active":
-        return "Active";
-      case "rest":
-        return "Rest";
-      case "finished":
-        return "Finished";
+      case 'warmup':
+        return 'Warmup';
+      case 'active':
+        return 'Active';
+      case 'rest':
+        return 'Rest';
+      case 'finished':
+        return 'Finished';
     }
   };
 
@@ -172,9 +161,7 @@ export const TimerScreen = () => {
       <View style={styles.contentSection}>
         <Dialog.Container visible={showFinishedDialog}>
           <Dialog.Title>Timer Finished</Dialog.Title>
-          <Dialog.Description>
-            Timer has finished. Press OK to reset.
-          </Dialog.Description>
+          <Dialog.Description>Timer has finished. Press OK to reset.</Dialog.Description>
           <Dialog.Button
             label="OK"
             onPress={() => {
@@ -184,8 +171,8 @@ export const TimerScreen = () => {
           />
         </Dialog.Container>
         <View style={styles.timerInfo}>
-          <Text style={styles.timerInfoFont}>Title: </Text>
-          <Text style={styles.timerInfoFont}>{selectedTimer.timerTitle}</Text>
+          <Text style={styles.timerInfoFont}>Name: </Text>
+          <Text style={styles.timerInfoFont}>{selectedTimer.timerName}</Text>
         </View>
         <View style={styles.timerInfo}>
           <Text style={styles.timerInfoFont}>Current State: </Text>
@@ -204,7 +191,7 @@ export const TimerScreen = () => {
         <View style={styles.timerActionButtonsContainer}>
           <IconButton
             IconButtonIconProps={{
-              name: "reload",
+              name: 'reload',
             }}
             IconButtonTouchableOpacityProps={{
               onPress: reset,
@@ -213,7 +200,7 @@ export const TimerScreen = () => {
           <IconButton
             isDisabled={secondsLeft <= 0}
             IconButtonIconProps={{
-              name: !isPaused ? "pause" : "play",
+              name: !isPaused ? 'pause' : 'play',
             }}
             IconButtonTouchableOpacityProps={{
               onPress: () => setIsPaused((prev) => !prev),
@@ -221,10 +208,10 @@ export const TimerScreen = () => {
           />
           <IconButton
             IconButtonIconProps={{
-              name: "pencil",
+              name: 'pencil',
             }}
             IconButtonTouchableOpacityProps={{
-              onPress: () => navigation.navigate("EditTimer"),
+              onPress: () => navigation.navigate('EditTimer'),
             }}
           />
         </View>
@@ -242,44 +229,43 @@ export const TimerScreen = () => {
 
 const styles = StyleSheet.create({
   timerActionButtonsContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
   },
   contentSection: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     gap: 32,
-    alignItems: "center",
+    alignItems: 'center',
   },
   timerInfo: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     gap: 16,
-    minWidth: 256,
-    maxWidth: 256,
+    minWidth: 300,
   },
   timerInfoFont: {
     fontSize: 24,
   },
   pausedStatusText: {
     fontSize: 20,
-    color: "red",
-    textAlign: "center",
+    color: 'red',
+    textAlign: 'center',
   },
   initialStatusText: {
     fontSize: 20,
-    color: "blue",
-    textAlign: "center",
+    color: 'blue',
+    textAlign: 'center',
   },
   liveStatusText: {
     fontSize: 20,
-    color: "green",
-    textAlign: "center",
+    color: 'green',
+    textAlign: 'center',
   },
   finishedStatusText: {
     fontSize: 20,
-    color: "red",
-    textAlign: "center",
+    color: 'red',
+    textAlign: 'center',
   },
 });

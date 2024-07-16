@@ -6,7 +6,7 @@ export type Timer = {
   intervalCount: number;
   restTime: number;
   warmupTime: number;
-  timerTitle: string;
+  timerName: string;
 };
 
 export const DEFAULT_TIMER_PARAMS: Timer = {
@@ -14,7 +14,7 @@ export const DEFAULT_TIMER_PARAMS: Timer = {
   intervalCount: 2,
   restTime: 3,
   warmupTime: 2,
-  timerTitle: 'Default Timer',
+  timerName: 'Default Timer',
 };
 
 // Define a type for the state

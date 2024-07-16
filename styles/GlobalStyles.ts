@@ -1,12 +1,21 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const GlobalStyles = StyleSheet.create({
   screenContainer: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
     padding: 24,
   },
-  backButtonStyle: {
-    alignSelf: "flex-start",
+  backButtonHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });
