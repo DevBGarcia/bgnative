@@ -11,7 +11,7 @@ import { NUMBERS_ONLY_REGEX } from '../utils/RegexSupport';
 export const TimerEditScreen = () => {
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
-  const { selectedTimer } = useTimerStore();
+  const { selectedTimer, setSelectedTimer, isTimerUpdateLoading, setIsTimerUpdateLoading } = useTimerStore();
 
   const [timerName, onChangeTimerName] = useState<string>(selectedTimer.timerName);
 
@@ -28,6 +28,8 @@ export const TimerEditScreen = () => {
   const [isWarmupTimeError, setIsWarmupTimeError] = useState<boolean>(false);
 
   const updateSelectedTimer = () => {
+    setIsTimerUpdateLoading(true);
+
     let newTimer: Timer = {
       timerName: timerName,
       intervalCount: Number(intervalRoundCount),
@@ -35,6 +37,12 @@ export const TimerEditScreen = () => {
       restTime: Number(restTime),
       warmupTime: Number(warmupTime),
     };
+
+    setSelectedTimer(newTimer);
+
+    setIsTimerUpdateLoading(false);
+
+    navigation.goBack();
   };
 
   const isUpdateDisabled =
@@ -149,11 +157,12 @@ export const TimerEditScreen = () => {
         <Button
           title="Save Timer"
           onPress={updateSelectedTimer}
-          disabled={isUpdateDisabled}
+          disabled={isUpdateDisabled || isTimerUpdateLoading}
         />
         <Button
           title="Cancel"
           onPress={() => navigation.goBack()}
+          disabled={isTimerUpdateLoading}
         />
       </View>
     </View>

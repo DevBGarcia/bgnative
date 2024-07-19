@@ -179,7 +179,7 @@ export const TimerScreen = () => {
           <Text style={styles.timerInfoFont}>{getHeaderText(timerState)}</Text>
         </View>
         <View style={styles.timerInfo}>
-          <Text style={styles.timerInfoFont}>Current Round:</Text>
+          <Text style={styles.timerInfoFont}>Current Interval:</Text>
           <Text style={styles.timerInfoFont}>
             {currentInterval} (of {selectedTimer.intervalCount})
           </Text>

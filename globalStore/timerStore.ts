@@ -20,7 +20,9 @@ export const DEFAULT_TIMER_PARAMS: Timer = {
 // Define a type for the state
 type State = {
   selectedTimer: Timer;
+  isTimerUpdateLoading: boolean;
   setSelectedTimer: (timer: Timer) => void;
+  setIsTimerUpdateLoading: (isLoading: boolean) => void;
 };
 
 export const useTimerStore = create<State>()(
@@ -28,6 +30,8 @@ export const useTimerStore = create<State>()(
     (set) => ({
       selectedTimer: DEFAULT_TIMER_PARAMS,
       setSelectedTimer: (timer: Timer) => set({ selectedTimer: timer }),
+      isTimerUpdateLoading: false,
+      setIsTimerUpdateLoading: (isLoading: boolean) => set({ isTimerUpdateLoading: isLoading }),
     }),
     { name: 'TimerStore' }
   )
