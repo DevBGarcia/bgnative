@@ -11,11 +11,13 @@ const useSoundManager = () => {
   useEffect(() => {
     // Initialize sounds
     const initializedSounds = {
+      //I use this sound for pausing
       stopped: new Sound('stopped.mp3', Sound.MAIN_BUNDLE, (error) => {
         if (error) {
           console.log('Failed to load the sound', error);
         }
       }),
+      //I use this sound for resuming
       returned: new Sound('returned.mp3', Sound.MAIN_BUNDLE, (error) => {
         if (error) {
           console.log('Failed to load the sound', error);
