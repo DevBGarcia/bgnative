@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import Sound from 'react-native-sound';
+import { SoundKey } from './SoundKeys';
 
-// Define the shape of the context data for better TypeScript support
-interface SoundContextType {
-  playSound: (soundName: string) => void;
-}
+export type SoundContextType = {
+  playSound: (soundName: SoundKey) => void;
+};
 
-// Provide a default value that matches the shape of SoundContextType
 const defaultValue: SoundContextType = {
   playSound: () => {
     console.log('Default playSound function');
@@ -20,21 +19,20 @@ const SoundContext = createContext<SoundContextType>(defaultValue);
 const useSoundManager = () => {
   const [sounds, setSounds] = useState({});
 
+  // Generic onmount useEffect to initialize sounds
   useEffect(() => {
-    // Initialize sounds
-    const initializedSounds = {
-      //I use this sound for pausing
+    const initializedSounds: Record<SoundKey, Sound> = {
       stopped: new Sound('stopped.mp3', Sound.MAIN_BUNDLE, (error) => {
         if (error) {
           console.log('Failed to load the sound', error);
         }
       }),
-      //I use this sound for resuming
       returned: new Sound('returned.mp3', Sound.MAIN_BUNDLE, (error) => {
         if (error) {
           console.log('Failed to load the sound', error);
         }
       }),
+
       // Add more sounds here
     };
 

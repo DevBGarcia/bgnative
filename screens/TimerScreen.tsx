@@ -10,6 +10,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useTimerStore } from '../globalStore/timerStore';
 import Dialog from 'react-native-dialog';
 import { GlobalStyles } from '../styles/GlobalStyles';
+import { useSound } from '../context/SoundManager';
 
 type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
 
@@ -41,6 +42,8 @@ export const TimerScreen = () => {
   const { selectedTimer } = useTimerStore();
 
   const [appState, setAppState] = useState(AppState.currentState);
+  const { playSound } = useSound();
+
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
   // Define state variables
@@ -203,7 +206,13 @@ export const TimerScreen = () => {
               name: !isPaused ? 'pause' : 'play',
             }}
             IconButtonTouchableOpacityProps={{
-              onPress: () => setIsPaused((prev) => !prev),
+              onPress: () => {
+                //Only play pause/resume sound if not starting timer for the first time
+                if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
+                  playSound(!isPaused ? 'stopped' : 'returned');
+                }
+                setIsPaused((prev) => !prev);
+              },
             }}
           />
           <IconButton
