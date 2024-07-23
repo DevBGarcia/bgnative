@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import Sound from 'react-native-sound';
-import { SoundKey } from './SoundKeys';
+import { SoundKey, SOUND_KEYS } from './SoundKeys';
 
 export type SoundContextType = {
   playSound: (soundName: SoundKey) => void;
@@ -21,20 +21,14 @@ const useSoundManager = () => {
 
   // Generic onmount useEffect to initialize sounds
   useEffect(() => {
-    const initializedSounds: Record<SoundKey, Sound> = {
-      stopped: new Sound('stopped.mp3', Sound.MAIN_BUNDLE, (error) => {
+    const initializedSounds: Record<string, Sound> = SOUND_KEYS.reduce((acc, key) => {
+      acc[key] = new Sound(`${key}.mp3`, Sound.MAIN_BUNDLE, (error) => {
         if (error) {
-          console.log('Failed to load the sound', error);
+          console.log(`Failed to load the sound ${key}`, error);
         }
-      }),
-      returned: new Sound('returned.mp3', Sound.MAIN_BUNDLE, (error) => {
-        if (error) {
-          console.log('Failed to load the sound', error);
-        }
-      }),
-
-      // Add more sounds here
-    };
+      });
+      return acc;
+    }, {});
 
     setSounds(initializedSounds);
 
