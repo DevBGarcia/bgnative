@@ -1,8 +1,20 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import Sound from 'react-native-sound';
 
-// Create a context
-const SoundContext = createContext();
+// Define the shape of the context data for better TypeScript support
+interface SoundContextType {
+  playSound: (soundName: string) => void;
+}
+
+// Provide a default value that matches the shape of SoundContextType
+const defaultValue: SoundContextType = {
+  playSound: () => {
+    console.log('Default playSound function');
+  },
+};
+
+// Create the context with the default value
+const SoundContext = createContext<SoundContextType>(defaultValue);
 
 // A functional component to manage sounds
 const useSoundManager = () => {
