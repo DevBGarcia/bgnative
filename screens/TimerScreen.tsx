@@ -11,6 +11,8 @@ import { useTimerStore } from '../globalStore/timerStore';
 import Dialog from 'react-native-dialog';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { useSound } from '../context/SoundManager';
+import { delayExecution } from '../utils/DelayExecution';
+import { SoundKey } from '../context/SoundKeys';
 
 type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
 
@@ -67,6 +69,74 @@ export const TimerScreen = () => {
     return () => subscription.remove();
   }, []);
 
+  useEffect(() => {
+    if (!isPaused) {
+      handleTimerAudio(secondsLeft);
+    }
+  }, [secondsLeft]);
+
+  // Function to play sound based on timer state, need a delay to avoid overlapping sounds with the rounds and intervals
+  const executeSoundAction = (seconds: number, activeSoundKey: SoundKey, inactiveSoundKey?: SoundKey) => {
+    const shouldDelaySound = () => {
+      switch (timerState) {
+        case 'active':
+          return seconds === selectedTimer.intervalTime;
+        case 'warmup':
+          return seconds === selectedTimer.warmupTime;
+        case 'rest':
+          return seconds === selectedTimer.restTime;
+        default:
+          return false;
+      }
+    };
+
+    const selectedSoundKey = (timerState === 'active' ? activeSoundKey : inactiveSoundKey) as SoundKey;
+
+    if (shouldDelaySound()) {
+      delayExecution(() => playSound(selectedSoundKey), 1);
+    } else {
+      playSound(selectedSoundKey);
+    }
+  };
+
+  const handleTimerAudio = (seconds: number) => {
+    const soundActions = {
+      180: () => {},
+      120: () => executeSoundAction(seconds, 'time_2_minutes_left', 'time_2_minutes'),
+      60: () => executeSoundAction(seconds, 'time_1_minute_left', 'time_1_minute'),
+      30: () => executeSoundAction(seconds, 'time_30_seconds_remaining', 'time_30_seconds'),
+      10: () => executeSoundAction(seconds, 'time_10_seconds_remaining', 'time_10_seconds'),
+      5: () => (timerState === 'active' ? playSound('time_5_second_countdown') : playSound('time_5_beep_spawn')),
+      0: () => timerState === 'active' && playSound('round_over'),
+    };
+
+    // Execute the sound action if the seconds are valid
+    const action = soundActions[seconds];
+    if (action) {
+      action();
+    }
+  };
+
+  const handleRoundIntervalAudio = (interval: number) => {
+    const intervalRoundActions = {
+      1: () => playSound('round_01'),
+      2: () => playSound('round_02'),
+      3: () => playSound('round_03'),
+      4: () => playSound('round_04'),
+      5: () => playSound('round_05'),
+      6: () => playSound('round_06'),
+      7: () => playSound('round_07'),
+      8: () => playSound('round_08'),
+      9: () => playSound('round_09'),
+      10: () => playSound('round_10'),
+    };
+    // Execute the sound action if the seconds are valid
+    const action = intervalRoundActions[interval];
+    if (action) {
+      action();
+    }
+  };
+
   // Single useEffect for timer logic
   useEffect(() => {
     const startTimer = () => {
@@ -78,6 +148,7 @@ export const TimerScreen = () => {
             // Change state when timer seconds reach 0
             switch (timerState) {
               case 'warmup':
+                handleRoundIntervalAudio(currentInterval);
                 setTimerState('active');
                 return getInitialSeconds('active');
               case 'active':
@@ -210,6 +281,8 @@ export const TimerScreen = () => {
                 //Only play pause/resume sound if not starting timer for the first time
                 if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
                   playSound(!isPaused ? 'stopped' : 'returned');
+                } else {
+                  playSound('reset');
                 }
                 setIsPaused((prev) => !prev);
               },

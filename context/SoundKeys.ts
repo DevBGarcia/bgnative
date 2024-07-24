@@ -40,12 +40,18 @@ export type SoundKey =
   | 'time_10_seconds_remaining'
   | 'time_10_seconds'
   | 'time_30_seconds_remaining'
-  | 'time_60_seconds'
+  | 'time_30_seconds'
   | 'time_60_seconds'
   | 'halfway_to_victory'
   | 'player_respawn'
   | 'respawn_timer'
-  | 'reset';
+  | 'reset'
+  | 'respawn_beep'
+  | 'time_5_beep_spawn'
+  | 'time_5_second_countdown'
+  | 'time_1_minute'
+  | 'time_2_minutes'
+  | 'time_5_minutes'
 
 export const SOUND_KEYS = [
   'stopped',
@@ -89,9 +95,16 @@ export const SOUND_KEYS = [
   'time_10_seconds_remaining',
   'time_10_seconds',
   'time_30_seconds_remaining',
+  'time_30_seconds',
   'time_60_seconds',
   'halfway_to_victory',
   'player_respawn',
   'respawn_timer',
   'reset',
-];
+  'respawn_beep',
+  'time_5_beep_spawn',
+  'time_5_second_countdown',
+  'time_1_minute',
+  'time_2_minutes',
+  'time_5_minutes',
+]
