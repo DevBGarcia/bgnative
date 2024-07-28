@@ -107,13 +107,24 @@ export const TimerScreen = () => {
       30: () => executeSoundAction(seconds, 'time_30_seconds_remaining', 'time_30_seconds'),
       10: () => executeSoundAction(seconds, 'time_10_seconds_remaining', 'time_10_seconds'),
       5: () => (timerState === 'active' ? playSound('time_5_second_countdown') : playSound('time_5_beep_spawn')),
-      0: () => timerState === 'active' && playSound('round_over'),
+      0: () => handleRoundTransitionAudio(),
     };
 
     // Execute the sound action if the seconds are valid
     const action = soundActions[seconds];
     if (action) {
       action();
+    }
+  };
+
+  //Need a function to determine what audio to play when transitioning between states at the end of each timer (warmup, active, rest)
+  const handleRoundTransitionAudio = () => {
+    if (timerState === 'warmup') {
+      handleRoundIntervalAudio(currentInterval);
+    } else if (timerState === 'active') {
+      currentInterval === selectedTimer.intervalCount ? playSound('game_over_victory') : playSound('round_over');
+    } else if (timerState === 'rest') {
+      currentInterval + 1 === selectedTimer.intervalCount ? playSound('final_round_1') : handleRoundIntervalAudio(currentInterval + 1);
     }
   };
 
@@ -129,6 +140,21 @@ export const TimerScreen = () => {
       8: () => playSound('round_08'),
       9: () => playSound('round_09'),
       10: () => playSound('round_10'),
+      11: () => playSound('round_11'),
+      12: () => playSound('round_12'),
+      13: () => playSound('round_13'),
+      14: () => playSound('round_14'),
+      15: () => playSound('round_15'),
+      16: () => playSound('round_16'),
+      17: () => playSound('round_17'),
+      18: () => playSound('round_18'),
+      19: () => playSound('round_19'),
+      20: () => playSound('round_20'),
+      21: () => playSound('round_21'),
+      22: () => playSound('round_22'),
+      23: () => playSound('round_23'),
+      24: () => playSound('round_24'),
+      25: () => playSound('round_25'),
     };
     // Execute the sound action if the seconds are valid
     const action = intervalRoundActions[interval];
@@ -148,21 +174,20 @@ export const TimerScreen = () => {
             // Change state when timer seconds reach 0
             switch (timerState) {
               case 'warmup':
-                handleRoundIntervalAudio(currentInterval);
                 setTimerState('active');
                 return getInitialSeconds('active');
               case 'active':
                 if (currentInterval < selectedTimer.intervalCount) {
                   //More rounrs to go, set rest
+                  playSound('reset');
                   setTimerState('rest');
                   return getInitialSeconds('rest');
                 } else {
-                  // Last round finished
                   setTimerState('finished');
                   BackgroundTimer.stopBackgroundTimer(); // Stop the timer
-                  setIsPaused(true);
                   if (appState === 'active') {
                     setShowFinishedDialog(true);
+                    reset();
                   } else {
                     // Trigger push notification if appState is not 'active'
                     PushNotification.localNotification({
@@ -282,7 +307,9 @@ export const TimerScreen = () => {
                 if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
                   playSound(!isPaused ? 'stopped' : 'returned');
                 } else {
-                  playSound('reset');
+                  //Need to startup sound as well as trigger first seconds sounds here
+                  playSound('buckle_up');
+                  handleTimerAudio(secondsLeft);
                 }
                 setIsPaused((prev) => !prev);
               },

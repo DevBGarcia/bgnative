@@ -10,10 +10,10 @@ export type Timer = {
 };
 
 export const DEFAULT_TIMER_PARAMS: Timer = {
-  intervalTime: 30,
-  intervalCount: 2,
-  restTime: 15,
-  warmupTime: 15,
+  intervalTime: 10,
+  intervalCount: 3,
+  restTime: 10,
+  warmupTime: 10,
   timerName: 'Default Timer',
 };
 

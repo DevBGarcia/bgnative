@@ -52,6 +52,7 @@ export type SoundKey =
   | 'time_1_minute'
   | 'time_2_minutes'
   | 'time_5_minutes'
+  | 'buckle_up';
 
 export const SOUND_KEYS = [
   'stopped',
@@ -107,4 +108,5 @@ export const SOUND_KEYS = [
   'time_1_minute',
   'time_2_minutes',
   'time_5_minutes',
-]
+  'buckle_up',
+];
