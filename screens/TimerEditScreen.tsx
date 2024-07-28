@@ -88,7 +88,7 @@ export const TimerEditScreen = () => {
             />
           </View>
           <View>
-            <Text>Interval/Round Count (Seconds):</Text>
+            <Text>Interval/Round Count:</Text>
             {isIntervalRoundCountError && <Text style={styles.errorMessage}>Invalid Value, whole numbers only</Text>}
             <TextInput
               style={[styles.input, isIntervalRoundCountError && styles.errorInput]}
