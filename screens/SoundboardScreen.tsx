@@ -7,6 +7,7 @@ import { TimerInputModal } from '../components/TimerInputModal';
 export const SoundboardScreen = () => {
   const { playSound } = useSound();
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
+  const [timeInSeconds, setTimeInSeconds] = useState(0);
 
   return (
     <View style={GlobalStyles.screenContainer}>
@@ -17,9 +18,11 @@ export const SoundboardScreen = () => {
       <TimerInputModal
         isOpen={isTimerModalOpen}
         setIsOpen={setIsTimerModalOpen}
+        timeInSeconds={timeInSeconds}
+        setTimeInSeconds={setTimeInSeconds}
       />
       <Button
-        title="Open Timer"
+        title="Open Timer Input Modal"
         onPress={() => setIsTimerModalOpen(true)}
       />
     </View>

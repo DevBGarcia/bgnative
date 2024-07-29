@@ -7,5 +7,6 @@ module.exports = {
     'exhaustive-deps': 'off',
     'eol-last': 'off',
     quotes: 'off',
+    'react-native/no-inline-styles': 'off',
   },
 };

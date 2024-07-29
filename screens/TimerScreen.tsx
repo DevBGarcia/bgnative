@@ -320,7 +320,10 @@ export const TimerScreen = () => {
               name: 'pencil',
             }}
             IconButtonTouchableOpacityProps={{
-              onPress: () => navigation.navigate('EditTimer'),
+              onPress: () => {
+                reset();
+                navigation.navigate('EditTimer');
+              },
             }}
           />
         </View>

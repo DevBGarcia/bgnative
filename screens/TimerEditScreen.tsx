@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import IconButton from '../components/IconButton';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { StackParamList } from '../navigators/TimersNavigator';
 import { Timer, useTimerStore } from '../globalStore/timerStore';
 import { NUMBERS_ONLY_REGEX } from '../utils/RegexSupport';
+import { Button } from '../components/Button';
+import { TimerInputModal } from '../components/TimerInputModal';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+export type EditTimerState = 'intervalRoundTime' | 'restTime' | 'warmupTime' | null;
 
 export const TimerEditScreen = () => {
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
@@ -19,13 +24,52 @@ export const TimerEditScreen = () => {
   const [isIntervalRoundCountError, setIsIntervalRoundCountError] = useState<boolean>(false);
 
   const [intervalRoundTime, onChangeIntervalRoundTime] = useState<string>(selectedTimer.intervalTime.toString());
-  const [isIntervalRoundTimeError, setIsIntervalRoundTimeError] = useState<boolean>(false);
 
   const [restTime, onChangeRestTime] = useState<string>(selectedTimer.restTime.toString());
-  const [isRestTimeError, setIsRestTimeError] = useState<boolean>(false);
 
   const [warmupTime, onChangeWarmupTime] = useState<string>(selectedTimer.warmupTime.toString());
-  const [isWarmupTimeError, setIsWarmupTimeError] = useState<boolean>(false);
+
+  const [isTimerInputModalOpen, setIsTimerInputModalOpen] = useState<boolean>(false);
+  const [editTimerState, setEditTimerState] = useState<EditTimerState>(null);
+
+  const getTimerInputModalTitle = (editTimerKey: EditTimerState) => {
+    switch (editTimerKey) {
+      case 'intervalRoundTime':
+        return 'Set Interval/Round Time';
+      case 'restTime':
+        return 'Set Rest Time';
+      case 'warmupTime':
+        return 'Set Warmup Time';
+      default:
+        return 'Set Timer';
+    }
+  };
+
+  const getEditTime = (editTimerKey: EditTimerState) => {
+    switch (editTimerKey) {
+      case 'intervalRoundTime':
+        return intervalRoundTime;
+      case 'restTime':
+        return restTime;
+      case 'warmupTime':
+        return warmupTime;
+      default:
+        return '';
+    }
+  };
+
+  const getEditTimeSetter = (editTimerKey: EditTimerState) => {
+    switch (editTimerKey) {
+      case 'intervalRoundTime':
+        return onChangeIntervalRoundTime;
+      case 'restTime':
+        return onChangeRestTime;
+      case 'warmupTime':
+        return onChangeWarmupTime;
+      default:
+        return () => {};
+    }
+  };
 
   const updateSelectedTimer = () => {
     setIsTimerUpdateLoading(true);
@@ -45,19 +89,17 @@ export const TimerEditScreen = () => {
     navigation.goBack();
   };
 
-  const isUpdateDisabled =
-    isIntervalRoundCountError ||
-    isIntervalRoundTimeError ||
-    isRestTimeError ||
-    isWarmupTimeError ||
-    !timerName ||
-    !intervalRoundCount ||
-    !intervalRoundTime ||
-    !restTime ||
-    !warmupTime;
+  const isUpdateDisabled = isIntervalRoundCountError || !timerName || !intervalRoundCount || !intervalRoundTime || !restTime || !warmupTime;
 
   return (
     <View style={styles.screenContainer}>
+      <TimerInputModal
+        isOpen={isTimerInputModalOpen}
+        setIsOpen={setIsTimerInputModalOpen}
+        timeInSeconds={getEditTime(editTimerState)}
+        setTimeInSeconds={getEditTimeSetter(editTimerState)}
+        modalTitle={getTimerInputModalTitle(editTimerState)}
+      />
       <ScrollView>
         <View style={styles.subcontentSection}>
           <View style={GlobalStyles.backButtonHeader}>
@@ -89,11 +131,11 @@ export const TimerEditScreen = () => {
           </View>
           <View>
             <Text>Interval/Round Count:</Text>
-            {isIntervalRoundCountError && <Text style={styles.errorMessage}>Invalid Value, whole numbers only</Text>}
+            {isIntervalRoundCountError && <Text style={styles.errorMessage}>Invalid, whole number above 0 required</Text>}
             <TextInput
               style={[styles.input, isIntervalRoundCountError && styles.errorInput]}
               onChangeText={(inputVal) => {
-                const isValid = NUMBERS_ONLY_REGEX.test(inputVal);
+                let isValid = NUMBERS_ONLY_REGEX.test(inputVal) && Number(inputVal) > 0;
                 setIsIntervalRoundCountError(!isValid);
                 onChangeIntervalRoundCount(inputVal);
               }}
@@ -105,51 +147,39 @@ export const TimerEditScreen = () => {
           </View>
           <View>
             <Text>Time Length Per Interval/Round (Seconds):</Text>
-            {isIntervalRoundTimeError && <Text style={styles.errorMessage}>Invalid Value, whole numbers only</Text>}
-            <TextInput
-              style={[styles.input, isIntervalRoundTimeError && styles.errorInput]}
-              onChangeText={(inputVal) => {
-                const isValid = NUMBERS_ONLY_REGEX.test(inputVal);
-                setIsIntervalRoundTimeError(!isValid);
-                onChangeIntervalRoundTime(inputVal);
+            <TouchableOpacity
+              style={[styles.input]}
+              onPress={() => {
+                setEditTimerState('intervalRoundTime');
+                setIsTimerInputModalOpen(true);
               }}
-              value={intervalRoundTime}
-              keyboardType="numeric"
-              placeholder="Number of seconds per each interval/round"
-              placeholderTextColor={'gray'}
-            />
+            >
+              {intervalRoundTime ? <Text>{intervalRoundTime} seconds</Text> : <Text style={{ color: 'lightgrey' }}>Set Interval/Round Time</Text>}
+            </TouchableOpacity>
           </View>
           <View>
             <Text>Rest Time Length (Seconds):</Text>
-            {isRestTimeError && <Text style={styles.errorMessage}>Invalid Value, whole numbers only</Text>}
-            <TextInput
-              style={[styles.input, isRestTimeError && styles.errorInput]}
-              onChangeText={(inputVal) => {
-                const isValid = NUMBERS_ONLY_REGEX.test(inputVal);
-                setIsRestTimeError(!isValid);
-                onChangeRestTime(inputVal);
+            <TouchableOpacity
+              style={[styles.input]}
+              onPress={() => {
+                setEditTimerState('restTime');
+                setIsTimerInputModalOpen(true);
               }}
-              value={restTime}
-              keyboardType="numeric"
-              placeholder="Number of seconds for rest"
-              placeholderTextColor={'gray'}
-            />
+            >
+              {restTime ? <Text>{restTime} seconds</Text> : <Text style={{ color: 'lightgrey' }}>Number of seconds for rest</Text>}
+            </TouchableOpacity>
           </View>
           <View>
             <Text>Warmup Time Length (Seconds):</Text>
-            {isWarmupTimeError && <Text style={styles.errorMessage}>Invalid Value, whole numbers only</Text>}
-            <TextInput
-              style={[styles.input, isWarmupTimeError && styles.errorInput]}
-              onChangeText={(inputVal) => {
-                const isValid = NUMBERS_ONLY_REGEX.test(inputVal);
-                setIsWarmupTimeError(!isValid);
-                onChangeWarmupTime(inputVal);
+            <TouchableOpacity
+              style={[styles.input]}
+              onPress={() => {
+                setEditTimerState('warmupTime');
+                setIsTimerInputModalOpen(true);
               }}
-              value={warmupTime}
-              keyboardType="numeric"
-              placeholder="Number of seconds for warmup"
-              placeholderTextColor={'gray'}
-            />
+            >
+              {warmupTime ? <Text>{warmupTime} seconds</Text> : <Text style={{ color: 'lightgrey' }}>Number of seconds for warmup"</Text>}
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -157,12 +187,14 @@ export const TimerEditScreen = () => {
         <Button
           title="Save Timer"
           onPress={updateSelectedTimer}
-          disabled={isUpdateDisabled || isTimerUpdateLoading}
+          isDisabled={isUpdateDisabled || isTimerUpdateLoading}
+          style={{ color: 'green', borderColor: 'green' }}
+          textStyle={{ color: 'green' }}
         />
         <Button
           title="Cancel"
           onPress={() => navigation.goBack()}
-          disabled={isTimerUpdateLoading}
+          isDisabled={isTimerUpdateLoading}
         />
       </View>
     </View>

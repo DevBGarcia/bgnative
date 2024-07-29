@@ -6,11 +6,12 @@ import { LinearGradient } from 'react-native-linear-gradient'; // or `import Lin
 export type TimerInputModalProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  timeInSeconds: number;
-  setTimeInSeconds: (timeInSeconds: number) => void;
+  timeInSeconds: any;
+  setTimeInSeconds: (timeInSeconds: any) => void;
+  modalTitle?: string;
 };
 
-export const TimerInputModal: React.FC<TimerInputModalProps> = ({ isOpen, setIsOpen, timeInSeconds, setTimeInSeconds }) => {
+export const TimerInputModal: React.FC<TimerInputModalProps> = ({ isOpen, setIsOpen, timeInSeconds, setTimeInSeconds, modalTitle }) => {
   const [initialValue, setInitialValue] = useState(convertToTimeObject(timeInSeconds));
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export const TimerInputModal: React.FC<TimerInputModalProps> = ({ isOpen, setIsO
           setIsOpen(false);
         }}
         initialValue={initialValue}
-        modalTitle="Set Timer"
+        modalTitle={modalTitle || 'Set Timer'}
         onCancel={() => setIsOpen(false)}
         closeOnOverlayPress
         use12HourPicker
