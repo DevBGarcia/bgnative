@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { SoundboardScreen } from '../screens/SoundboardScreen';
+// import { SoundboardScreen } from '../screens/SoundboardScreen';
 import { TimersNavigator } from './TimersNavigator';
 
 export const TOP_LEVEL_SCREEN_NAVIGATOR_NAMES = {
@@ -20,10 +20,10 @@ export const RootNavigator = () => {
           name={TOP_LEVEL_SCREEN_NAVIGATOR_NAMES.Timers}
           component={TimersNavigator}
         />
-        <Drawer.Screen
+        {/* <Drawer.Screen
           name={TOP_LEVEL_SCREEN_NAVIGATOR_NAMES.Soundboard}
           component={SoundboardScreen}
-        />
+        /> */}
       </Drawer.Navigator>
     </NavigationContainer>
   );

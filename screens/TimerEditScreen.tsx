@@ -16,7 +16,7 @@ export type EditTimerState = 'intervalRoundTime' | 'restTime' | 'warmupTime' | n
 export const TimerEditScreen = () => {
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
-  const { selectedTimer, setSelectedTimer, isTimerUpdateLoading, setIsTimerUpdateLoading } = useTimerStore();
+  const { selectedTimer, setSelectedTimer, isTimerUpdateLoading, setIsTimerUpdateLoading, triggerResetTimerFlag } = useTimerStore();
 
   const [timerName, onChangeTimerName] = useState<string>(selectedTimer.timerName);
 
@@ -85,6 +85,7 @@ export const TimerEditScreen = () => {
     setSelectedTimer(newTimer);
 
     setIsTimerUpdateLoading(false);
+    triggerResetTimerFlag();
 
     navigation.goBack();
   };

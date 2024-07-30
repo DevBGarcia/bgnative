@@ -23,15 +23,19 @@ type State = {
   isTimerUpdateLoading: boolean;
   setSelectedTimer: (timer: Timer) => void;
   setIsTimerUpdateLoading: (isLoading: boolean) => void;
+  triggerResetTimerFlag: () => void;
+  resetTimerFlag: boolean;
 };
 
 export const useTimerStore = create<State>()(
   devtools(
     (set) => ({
+      resetTimerFlag: false,
       selectedTimer: DEFAULT_TIMER_PARAMS,
       setSelectedTimer: (timer: Timer) => set({ selectedTimer: timer }),
       isTimerUpdateLoading: false,
       setIsTimerUpdateLoading: (isLoading: boolean) => set({ isTimerUpdateLoading: isLoading }),
+      triggerResetTimerFlag: () => set((state) => ({ resetTimerFlag: !state.resetTimerFlag })),
     }),
     { name: 'TimerStore' }
   )

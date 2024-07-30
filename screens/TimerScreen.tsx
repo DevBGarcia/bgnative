@@ -41,7 +41,7 @@ export const TimerStatus = (props: TimerStatusProps) => {
 };
 
 export const TimerScreen = () => {
-  const { selectedTimer } = useTimerStore();
+  const { selectedTimer, resetTimerFlag } = useTimerStore();
 
   const [appState, setAppState] = useState(AppState.currentState);
   const { playSound } = useSound();
@@ -74,6 +74,10 @@ export const TimerScreen = () => {
       handleTimerAudio(secondsLeft);
     }
   }, [secondsLeft]);
+
+  useEffect(() => {
+    reset();
+  }, [resetTimerFlag]);
 
   // Function to play sound based on timer state, need a delay to avoid overlapping sounds with the rounds and intervals
   const executeSoundAction = (seconds: number, activeSoundKey: SoundKey, inactiveSoundKey?: SoundKey) => {
@@ -173,10 +177,10 @@ export const TimerScreen = () => {
           } else {
             // Change state when timer seconds reach 0
             switch (timerState) {
-              case 'warmup':
+              case 'warmup': //Warmup is done, start active
                 setTimerState('active');
                 return getInitialSeconds('active');
-              case 'active':
+              case 'active': //Active is done, check if more rounds to go, set rest else finish
                 if (currentInterval < selectedTimer.intervalCount) {
                   //More rounrs to go, set rest
                   playSound('reset');
@@ -198,7 +202,7 @@ export const TimerScreen = () => {
                   }
                   return getInitialSeconds('finished');
                 }
-              case 'rest':
+              case 'rest': //Rest is done, start active
                 setCurrentInterval((prevInterval) => prevInterval + 1);
                 setTimerState('active');
                 return getInitialSeconds('active');
@@ -308,7 +312,7 @@ export const TimerScreen = () => {
                   playSound(!isPaused ? 'stopped' : 'returned');
                 } else {
                   //Need to startup sound as well as trigger first seconds sounds here
-                  playSound('buckle_up');
+                  // playSound('buckle_up');
                   handleTimerAudio(secondsLeft);
                 }
                 setIsPaused((prev) => !prev);

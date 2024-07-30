@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">bgnative</string>
     <string name="default_notification_channel_id">channel-id</string>
+    <string name="app_name">HIIT Timer</string>
 </resources>
