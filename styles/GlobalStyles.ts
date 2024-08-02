@@ -5,6 +5,7 @@ export const GlobalStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: 24,
+    gap: 8,
   },
   backButtonHeader: {
     flexDirection: 'row',

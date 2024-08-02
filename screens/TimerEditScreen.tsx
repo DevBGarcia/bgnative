@@ -10,6 +10,7 @@ import { NUMBERS_ONLY_REGEX } from '../utils/RegexSupport';
 import { Button } from '../components/Button';
 import { TimerInputModal } from '../components/TimerInputModal';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { formatTime } from '../utils/FormatTime';
 
 export type EditTimerState = 'intervalRoundTime' | 'restTime' | 'warmupTime' | null;
 
@@ -101,7 +102,11 @@ export const TimerEditScreen = () => {
         setTimeInSeconds={getEditTimeSetter(editTimerState)}
         modalTitle={getTimerInputModalTitle(editTimerState)}
       />
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        indicatorStyle="black"
+        persistentScrollbar={true}
+      >
         <View style={styles.subcontentSection}>
           <View style={GlobalStyles.backButtonHeader}>
             <IconButton
@@ -147,7 +152,7 @@ export const TimerEditScreen = () => {
             />
           </View>
           <View>
-            <Text>Time Length Per Interval/Round (Seconds):</Text>
+            <Text>Time Length Per Interval/Round:</Text>
             <TouchableOpacity
               style={[styles.input]}
               onPress={() => {
@@ -155,11 +160,11 @@ export const TimerEditScreen = () => {
                 setIsTimerInputModalOpen(true);
               }}
             >
-              {intervalRoundTime ? <Text>{intervalRoundTime} seconds</Text> : <Text style={{ color: 'lightgrey' }}>Set Interval/Round Time</Text>}
+              {intervalRoundTime ? <Text>{formatTime(intervalRoundTime)}</Text> : <Text style={{ color: 'lightgrey' }}>Set Interval/Round Time</Text>}
             </TouchableOpacity>
           </View>
           <View>
-            <Text>Rest Time Length (Seconds):</Text>
+            <Text>Rest Time Length:</Text>
             <TouchableOpacity
               style={[styles.input]}
               onPress={() => {
@@ -167,11 +172,11 @@ export const TimerEditScreen = () => {
                 setIsTimerInputModalOpen(true);
               }}
             >
-              {restTime ? <Text>{restTime} seconds</Text> : <Text style={{ color: 'lightgrey' }}>Number of seconds for rest</Text>}
+              {restTime ? <Text>{formatTime(restTime)}</Text> : <Text style={{ color: 'lightgrey' }}>Number of seconds for rest</Text>}
             </TouchableOpacity>
           </View>
           <View>
-            <Text>Warmup Time Length (Seconds):</Text>
+            <Text>Warmup Time Length:</Text>
             <TouchableOpacity
               style={[styles.input]}
               onPress={() => {
@@ -179,7 +184,7 @@ export const TimerEditScreen = () => {
                 setIsTimerInputModalOpen(true);
               }}
             >
-              {warmupTime ? <Text>{warmupTime} seconds</Text> : <Text style={{ color: 'lightgrey' }}>Number of seconds for warmup"</Text>}
+              {warmupTime ? <Text>{formatTime(warmupTime)}</Text> : <Text style={{ color: 'lightgrey' }}>Number of seconds for warmup</Text>}
             </TouchableOpacity>
           </View>
         </View>

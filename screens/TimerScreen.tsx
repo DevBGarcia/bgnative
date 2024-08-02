@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, AppState, AppStateStatus, View, StyleSheet } from 'react-native';
+import { Text, AppState, AppStateStatus, View, StyleSheet, ScrollView } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import { formatTime } from '../utils/FormatTime';
@@ -29,7 +29,7 @@ export const TimerStatus = (props: TimerStatusProps) => {
 
   if (isPaused) {
     if (currentInterval === 1 && timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime) {
-      return <Text style={styles.initialStatusText}>Press play to start.</Text>;
+      return <Text style={styles.initialStatusText}>Press play icon to start.</Text>;
     } else if (timerState === 'finished' && secondsLeft === 0) {
       return <Text style={styles.finishedStatusText}>Finished! Reset to start again.</Text>;
     } else {
@@ -261,84 +261,114 @@ export const TimerScreen = () => {
 
   return (
     <View style={GlobalStyles.screenContainer}>
-      <View style={styles.contentSection}>
-        <Dialog.Container visible={showFinishedDialog}>
-          <Dialog.Title>Timer Finished</Dialog.Title>
-          <Dialog.Description>Timer has finished. Press OK to reset.</Dialog.Description>
-          <Dialog.Button
-            label="OK"
-            onPress={() => {
-              setShowFinishedDialog(false);
-              reset();
-            }}
-          />
-        </Dialog.Container>
-        <View style={styles.timerInfo}>
-          <Text style={styles.timerInfoFont}>Name: </Text>
-          <Text style={styles.timerInfoFont}>{selectedTimer.timerName}</Text>
-        </View>
-        <View style={styles.timerInfo}>
-          <Text style={styles.timerInfoFont}>Current State: </Text>
-          <Text style={styles.timerInfoFont}>{getHeaderText(timerState)}</Text>
-        </View>
-        <View style={styles.timerInfo}>
-          <Text style={styles.timerInfoFont}>Current Interval:</Text>
-          <Text style={styles.timerInfoFont}>
-            {currentInterval} (of {selectedTimer.intervalCount})
-          </Text>
-        </View>
-        <View style={styles.timerInfo}>
-          <Text style={styles.timerInfoFont}>Time Left:</Text>
-          <Text style={styles.timerInfoFont}>{formatTime(secondsLeft)}</Text>
-        </View>
-        <View style={styles.timerActionButtonsContainer}>
-          <IconButton
-            IconButtonIconProps={{
-              name: 'reload',
-            }}
-            IconButtonTouchableOpacityProps={{
-              onPress: reset,
-            }}
-          />
-          <IconButton
-            isDisabled={secondsLeft <= 0}
-            IconButtonIconProps={{
-              name: !isPaused ? 'pause' : 'play',
-            }}
-            IconButtonTouchableOpacityProps={{
-              onPress: () => {
-                //Only play pause/resume sound if not starting timer for the first time
-                if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
-                  playSound(!isPaused ? 'stopped' : 'returned');
-                } else {
-                  //Need to startup sound as well as trigger first seconds sounds here
-                  // playSound('buckle_up');
-                  handleTimerAudio(secondsLeft);
-                }
-                setIsPaused((prev) => !prev);
-              },
-            }}
-          />
-          <IconButton
-            IconButtonIconProps={{
-              name: 'pencil',
-            }}
-            IconButtonTouchableOpacityProps={{
-              onPress: () => {
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        indicatorStyle="black"
+        persistentScrollbar={true}
+      >
+        <View style={styles.contentSection}>
+          <Dialog.Container visible={showFinishedDialog}>
+            <Dialog.Title>Timer Finished</Dialog.Title>
+            <Dialog.Description>Timer has finished. Press OK to reset.</Dialog.Description>
+            <Dialog.Button
+              label="OK"
+              onPress={() => {
+                setShowFinishedDialog(false);
                 reset();
-                navigation.navigate('EditTimer');
-              },
-            }}
+              }}
+            />
+          </Dialog.Container>
+          <View>
+            <Text style={GlobalStyles.headerText}> Selected Timer Specs </Text>
+            <View style={styles.sectionSpacer} />
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Title : </Text>
+              <Text style={styles.timerInfoFont}>{selectedTimer.timerName}</Text>
+            </View>
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Interval Count: </Text>
+              <Text style={styles.timerInfoFont}>{selectedTimer.intervalCount}</Text>
+            </View>
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Warmup Time: </Text>
+              <Text style={styles.timerInfoFont}>{formatTime(selectedTimer.warmupTime)}</Text>
+            </View>
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Interval Time: </Text>
+              <Text style={styles.timerInfoFont}>{formatTime(selectedTimer.intervalTime)}</Text>
+            </View>
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Rest Time: </Text>
+              <Text style={styles.timerInfoFont}>{formatTime(selectedTimer.restTime)}</Text>
+            </View>
+          </View>
+          <View>
+            <Text style={GlobalStyles.headerText}> Timer State </Text>
+            <View style={styles.sectionSpacer} />
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Current State: </Text>
+              <Text style={styles.timerInfoFont}>{getHeaderText(timerState)}</Text>
+            </View>
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Current Interval:</Text>
+              <Text style={styles.timerInfoFont}>
+                {currentInterval} (of {selectedTimer.intervalCount})
+              </Text>
+            </View>
+            <View style={styles.timerInfo}>
+              <Text style={styles.timerInfoFont}>Time Left:</Text>
+              <Text style={styles.timerInfoFont}>{formatTime(secondsLeft)}</Text>
+            </View>
+            {/* Bottom section here for live/paused/start/ended status */}
+          </View>
+          <View style={styles.timerActionButtonsContainer}>
+            <IconButton
+              IconButtonIconProps={{
+                name: 'reload',
+              }}
+              IconButtonTouchableOpacityProps={{
+                onPress: reset,
+              }}
+            />
+            <IconButton
+              isDisabled={secondsLeft <= 0}
+              IconButtonIconProps={{
+                name: !isPaused ? 'pause' : 'play',
+              }}
+              IconButtonTouchableOpacityProps={{
+                onPress: () => {
+                  //Only play pause/resume sound if not starting timer for the first time
+                  if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
+                    playSound(!isPaused ? 'stopped' : 'returned');
+                  } else {
+                    //Need to startup sound as well as trigger first seconds sounds here
+                    // playSound('buckle_up');
+                    handleTimerAudio(secondsLeft);
+                  }
+                  setIsPaused((prev) => !prev);
+                },
+              }}
+            />
+            <IconButton
+              IconButtonIconProps={{
+                name: 'pencil',
+              }}
+              IconButtonTouchableOpacityProps={{
+                onPress: () => {
+                  reset();
+                  navigation.navigate('EditTimer');
+                },
+              }}
+            />
+          </View>
+          <TimerStatus
+            timerState={timerState}
+            currentInterval={currentInterval}
+            secondsLeft={secondsLeft}
+            isPaused={isPaused}
           />
         </View>
-        {/* Bottom section here for live/paused/start/ended status */}
-        <TimerStatus
-          timerState={timerState}
-          currentInterval={currentInterval}
-          secondsLeft={secondsLeft}
-          isPaused={isPaused}
-        />
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -347,6 +377,7 @@ const styles = StyleSheet.create({
   timerActionButtonsContainer: {
     flexDirection: 'row',
     gap: 8,
+    justifyContent: 'center',
   },
   contentSection: {
     display: 'flex',
@@ -362,7 +393,7 @@ const styles = StyleSheet.create({
     minWidth: 300,
   },
   timerInfoFont: {
-    fontSize: 24,
+    fontSize: 16,
   },
   pausedStatusText: {
     fontSize: 20,
@@ -370,18 +401,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   initialStatusText: {
-    fontSize: 20,
+    fontSize: 24,
     color: 'blue',
     textAlign: 'center',
   },
   liveStatusText: {
-    fontSize: 20,
+    fontSize: 24,
     color: 'green',
     textAlign: 'center',
   },
   finishedStatusText: {
-    fontSize: 20,
+    fontSize: 24,
     color: 'red',
     textAlign: 'center',
+  },
+  sectionSpacer: {
+    marginVertical: 8, // Adjust the value as needed for spacing
   },
 });
