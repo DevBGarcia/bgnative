@@ -11,7 +11,6 @@ import { useTimerStore } from '../globalStore/timerStore';
 import Dialog from 'react-native-dialog';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { useSound } from '../context/SoundManager';
-import { delayExecution } from '../utils/DelayExecution';
 import { SoundKey } from '../context/SoundKeys';
 
 type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
@@ -81,26 +80,9 @@ export const TimerScreen = () => {
 
   // Function to play sound based on timer state, need a delay to avoid overlapping sounds with the rounds and intervals
   const executeSoundAction = (seconds: number, activeSoundKey: SoundKey, inactiveSoundKey?: SoundKey) => {
-    const shouldDelaySound = () => {
-      switch (timerState) {
-        case 'active':
-          return seconds === selectedTimer.intervalTime;
-        case 'warmup':
-          return seconds === selectedTimer.warmupTime;
-        case 'rest':
-          return seconds === selectedTimer.restTime;
-        default:
-          return false;
-      }
-    };
-
     const selectedSoundKey = (timerState === 'active' ? activeSoundKey : inactiveSoundKey) as SoundKey;
 
-    if (shouldDelaySound()) {
-      delayExecution(() => playSound(selectedSoundKey), 1);
-    } else {
-      playSound(selectedSoundKey);
-    }
+    playSound(selectedSoundKey);
   };
 
   const handleTimerAudio = (seconds: number) => {
@@ -339,10 +321,10 @@ export const TimerScreen = () => {
                 onPress: () => {
                   //Only play pause/resume sound if not starting timer for the first time
                   if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
-                    playSound(!isPaused ? 'stopped' : 'returned');
+                    playSound(!isPaused ? 'stopped' : 'returned', true);
                   } else {
                     //Need to startup sound as well as trigger first seconds sounds here
-                    // playSound('buckle_up');
+                    playSound('buckle_up');
                     handleTimerAudio(secondsLeft);
                   }
                   setIsPaused((prev) => !prev);
