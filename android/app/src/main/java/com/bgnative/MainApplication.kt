@@ -11,11 +11,6 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
 import com.oblador.vectoricons.VectorIconsPackage;
-// flipper
-import com.facebook.flipper.android.AndroidFlipperClient
-import com.facebook.flipper.android.utils.FlipperUtils
-import com.facebook.flipper.core.FlipperPlugin
-import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 
 class MainApplication : Application(), ReactApplication {
 
@@ -43,12 +38,6 @@ class MainApplication : Application(), ReactApplication {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
-    }
-      // Initialize Flipper
-    if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
-        val client = AndroidFlipperClient.getInstance(this)
-        client.addPlugin(NetworkFlipperPlugin())
-        client.start()
     }
   }
 }
