@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
 
 export type Timer = {
   intervalTime: number;
@@ -28,7 +28,7 @@ type State = {
 };
 
 export const useTimerStore = create<State>()(
-  devtools(
+  persist(
     (set) => ({
       resetTimerFlag: false,
       selectedTimer: DEFAULT_TIMER_PARAMS,
@@ -37,6 +37,8 @@ export const useTimerStore = create<State>()(
       setIsTimerUpdateLoading: (isLoading: boolean) => set({ isTimerUpdateLoading: isLoading }),
       triggerResetTimerFlag: () => set((state) => ({ resetTimerFlag: !state.resetTimerFlag })),
     }),
-    { name: 'TimerStore' }
+    {
+      name: 'timer-store', // storage name
+    }
   )
 );
