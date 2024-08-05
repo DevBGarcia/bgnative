@@ -365,16 +365,17 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 32,
-    alignItems: 'center',
   },
   timerInfo: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     gap: 16,
-    minWidth: 300,
+    justifyContent: 'center',
   },
   timerInfoFont: {
+    fontSize: 16,
+  },
+  timerInfoLabel: {
     fontSize: 16,
   },
   pausedStatusText: {

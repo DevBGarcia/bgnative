@@ -94,7 +94,7 @@ export const TimerEditScreen = () => {
   const isUpdateDisabled = isIntervalRoundCountError || !timerName || !intervalRoundCount || !intervalRoundTime || !restTime || !warmupTime;
 
   return (
-    <View style={styles.screenContainer}>
+    <View style={GlobalStyles.screenContainer}>
       <TimerInputModal
         isOpen={isTimerInputModalOpen}
         setIsOpen={setIsTimerInputModalOpen}
@@ -188,21 +188,21 @@ export const TimerEditScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.subcontentSection}>
+          <Button
+            title="Save Timer"
+            onPress={updateSelectedTimer}
+            isDisabled={isUpdateDisabled || isTimerUpdateLoading}
+            style={{ color: 'green', borderColor: 'green' }}
+            textStyle={{ color: 'green' }}
+          />
+          <Button
+            title="Cancel"
+            onPress={() => navigation.goBack()}
+            isDisabled={isTimerUpdateLoading}
+          />
+        </View>
       </ScrollView>
-      <View style={styles.subcontentSection}>
-        <Button
-          title="Save Timer"
-          onPress={updateSelectedTimer}
-          isDisabled={isUpdateDisabled || isTimerUpdateLoading}
-          style={{ color: 'green', borderColor: 'green' }}
-          textStyle={{ color: 'green' }}
-        />
-        <Button
-          title="Cancel"
-          onPress={() => navigation.goBack()}
-          isDisabled={isTimerUpdateLoading}
-        />
-      </View>
     </View>
   );
 };
@@ -214,12 +214,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     color: 'black',
-    minWidth: 200,
-  },
-  screenContainer: {
-    flex: 1,
-    padding: 24,
-    flexDirection: 'column',
   },
   errorInput: {
     borderColor: 'red',
