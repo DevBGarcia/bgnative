@@ -16,6 +16,7 @@
     "macos-checkdevices": "xcrun simctl list devices"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-native-vector-icons/ionicons": "^7.3.1-alpha.9",
     "@react-navigation/drawer": "^6.6.15",

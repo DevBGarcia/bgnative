@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Timer = {
   intervalTime: number;
@@ -38,7 +39,8 @@ export const useTimerStore = create<State>()(
       triggerResetTimerFlag: () => set((state) => ({ resetTimerFlag: !state.resetTimerFlag })),
     }),
     {
-      name: 'timer-store', // storage name
+      name: 'timer-store',
+      getStorage: () => AsyncStorage,
     }
   )
 );
