@@ -11,7 +11,6 @@ import { useTimerStore } from '../globalStore/timerStore';
 import Dialog from 'react-native-dialog';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { useSound } from '../context/SoundManager';
-import { SoundKey } from '../context/SoundKeys';
 
 type TimerStates = 'warmup' | 'active' | 'rest' | 'finished';
 
@@ -55,6 +54,8 @@ export const TimerScreen = () => {
 
   const [showFinishedDialog, setShowFinishedDialog] = useState(false);
 
+  const HALF_WAY_MARK = selectedTimer.intervalTime / 2;
+
   useEffect(() => {
     // Define the function inside the effect to ensure it has the most current behavior
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -78,21 +79,23 @@ export const TimerScreen = () => {
     reset();
   }, [resetTimerFlag]);
 
-  // Function to play sound based on timer state, need a delay to avoid overlapping sounds with the rounds and intervals
-  const executeSoundAction = (seconds: number, activeSoundKey: SoundKey, inactiveSoundKey?: SoundKey) => {
-    const selectedSoundKey = (timerState === 'active' ? activeSoundKey : inactiveSoundKey) as SoundKey;
-
-    playSound(selectedSoundKey);
-  };
-
   const handleTimerAudio = (seconds: number) => {
+    //Only play halfway mark if it's greater than 30 seconds. It gets very noisy otherwise
+    if (seconds === HALF_WAY_MARK && timerState === 'active' && HALF_WAY_MARK >= 30) {
+      playSound('halfway_to_victory');
+    }
+
     const soundActions = {
-      180: () => {},
-      120: () => executeSoundAction(seconds, 'time_2_minutes_left', 'time_2_minutes'),
-      60: () => executeSoundAction(seconds, 'time_1_minute_left', 'time_1_minute'),
-      30: () => executeSoundAction(seconds, 'time_30_seconds_remaining', 'time_30_seconds'),
-      10: () => executeSoundAction(seconds, 'time_10_seconds_remaining', 'time_10_seconds'),
-      5: () => (timerState === 'active' ? playSound('time_5_second_countdown') : playSound('time_5_beep_spawn')),
+      600: () => timerState === 'active' && playSound('time_10_minutes_remain'),
+      300: () => {
+        playSound(timerState === 'active' ? 'time_5_minutes_remain' : 'time_5_minutes');
+      },
+      120: () => playSound(timerState === 'active' ? 'time_2_minutes_left' : 'time_2_minutes'),
+      60: () => playSound(timerState === 'active' ? 'time_1_minute_left' : 'time_1_minute'),
+      30: () => playSound(timerState === 'active' ? 'time_30_seconds_remaining' : 'time_30_seconds'),
+      10: () => playSound(timerState === 'active' ? 'time_10_seconds_remaining' : 'time_10_seconds'),
+      5: () => timerState === 'active' && playSound('time_5_second_countdown'),
+      4: () => timerState !== 'active' && playSound('time_4_beep_spawn'),
       0: () => handleRoundTransitionAudio(),
     };
 
@@ -105,8 +108,9 @@ export const TimerScreen = () => {
 
   //Need a function to determine what audio to play when transitioning between states at the end of each timer (warmup, active, rest)
   const handleRoundTransitionAudio = () => {
+    //This is an edge case for 1 round
     if (timerState === 'warmup') {
-      handleRoundIntervalAudio(currentInterval);
+      currentInterval === selectedTimer.intervalCount ? playSound('final_round_1') : handleRoundIntervalAudio(currentInterval);
     } else if (timerState === 'active') {
       currentInterval === selectedTimer.intervalCount ? playSound('game_over_victory') : playSound('round_over');
     } else if (timerState === 'rest') {
@@ -399,6 +403,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   sectionSpacer: {
-    marginVertical: 8, // Adjust the value as needed for spacing
+    marginVertical: 8,
   },
 });

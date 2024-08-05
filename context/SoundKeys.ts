@@ -37,6 +37,7 @@ export type SoundKey =
   | 'time_1_minute_left'
   | 'time_2_minutes_left'
   | 'time_5_minutes_remain'
+  | 'time_10_minutes_remain'
   | 'time_10_seconds_remaining'
   | 'time_10_seconds'
   | 'time_30_seconds_remaining'
@@ -48,6 +49,7 @@ export type SoundKey =
   | 'reset'
   | 'respawn_beep'
   | 'time_5_beep_spawn'
+  | 'time_4_beep_spawn'
   | 'time_5_second_countdown'
   | 'time_1_minute'
   | 'time_2_minutes'
@@ -92,7 +94,9 @@ export const SOUND_KEYS = [
   'round_over',
   'time_1_minute_left',
   'time_2_minutes_left',
+  'time_5_minutes',
   'time_5_minutes_remain',
+  'time_10_minutes_remain',
   'time_10_seconds_remaining',
   'time_10_seconds',
   'time_30_seconds_remaining',
@@ -104,6 +108,7 @@ export const SOUND_KEYS = [
   'reset',
   'respawn_beep',
   'time_5_beep_spawn',
+  'time_4_beep_spawn',
   'time_5_second_countdown',
   'time_1_minute',
   'time_2_minutes',
