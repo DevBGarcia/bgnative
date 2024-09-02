@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Text, AppState, AppStateStatus, View, StyleSheet, ScrollView } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
@@ -20,6 +20,8 @@ type TimerStatusProps = {
   secondsLeft: number;
   isPaused: boolean;
 };
+
+const TIMER_CHECK_INTERVAL = 100;
 
 export const TimerStatus = (props: TimerStatusProps) => {
   const { selectedTimer } = useTimerStore();
@@ -49,7 +51,13 @@ export const TimerScreen = () => {
   // Define state variables
   const [timerState, setTimerState] = useState<TimerStates>('warmup');
   const [currentInterval, setCurrentInterval] = useState(1);
+
+  const timerStartTimeRef = useRef<number | null>(null);
+  const timerDurationRef = useRef<number | null>(getInitialSeconds(timerState));
+  const timerPauseTimeRef = useRef<number | null>(null);
+
   const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds(timerState));
+
   const [isPaused, setIsPaused] = useState(true);
 
   const [showFinishedDialog, setShowFinishedDialog] = useState(false);
@@ -110,11 +118,13 @@ export const TimerScreen = () => {
   const handleRoundTransitionAudio = () => {
     //This is an edge case for 1 round
     if (timerState === 'warmup') {
-      currentInterval === selectedTimer.intervalCount ? playSound('final_round_1') : handleRoundIntervalAudio(currentInterval);
+      handleRoundIntervalAudio(currentInterval);
+      currentInterval === selectedTimer.intervalCount && playSound('final_round_1');
     } else if (timerState === 'active') {
       currentInterval === selectedTimer.intervalCount ? playSound('game_over_victory') : playSound('round_over');
     } else if (timerState === 'rest') {
-      currentInterval + 1 === selectedTimer.intervalCount ? playSound('final_round_1') : handleRoundIntervalAudio(currentInterval + 1);
+      handleRoundIntervalAudio(currentInterval + 1);
+      currentInterval + 1 === selectedTimer.intervalCount && playSound('final_round_1');
     }
   };
 
@@ -157,46 +167,61 @@ export const TimerScreen = () => {
   useEffect(() => {
     const startTimer = () => {
       BackgroundTimer.runBackgroundTimer(() => {
-        setSecondsLeft((prevSeconds: number) => {
-          if (prevSeconds > 0) {
-            return prevSeconds - 1;
-          } else {
-            // Change state when timer seconds reach 0
-            switch (timerState) {
-              case 'warmup': //Warmup is done, start active
-                setTimerState('active');
-                return getInitialSeconds('active');
-              case 'active': //Active is done, check if more rounds to go, set rest else finish
-                if (currentInterval < selectedTimer.intervalCount) {
-                  //More rounrs to go, set rest
-                  playSound('reset');
-                  setTimerState('rest');
-                  return getInitialSeconds('rest');
-                } else {
-                  setTimerState('finished');
-                  BackgroundTimer.stopBackgroundTimer(); // Stop the timer
-                  if (appState === 'active') {
-                    setShowFinishedDialog(true);
-                    reset();
-                  } else {
-                    // Trigger push notification if appState is not 'active'
-                    PushNotification.localNotification({
-                      channelId: 'channel-id',
-                      title: 'Timer Finished',
-                      message: 'Your timer has finished. Great job!', // Customize your message
-                    });
-                  }
-                  return getInitialSeconds('finished');
+        // Logic to check the durations and remaining times
+        let startTimeStamp = timerStartTimeRef.current;
+        if (!startTimeStamp) {
+          const initStartTime = new Date().getTime();
+          timerStartTimeRef.current = initStartTime;
+        }
+
+        const currentTime = new Date().getTime();
+        const elapsedTime = currentTime - startTimeStamp;
+        const remainingTime = timerDurationRef.current - Math.floor(elapsedTime / 1000);
+
+        console.log('BG - timer state:', timerState, '---remaining time:', remainingTime, '---app state:', appState);
+        if (remainingTime >= 0) {
+          setSecondsLeft(remainingTime);
+        } else {
+          switch (timerState) {
+            case 'warmup': //Warmup is done, start active
+              setTimerState('active');
+              setSecondsLeft(getInitialSeconds('active'));
+              timerDurationRef.current = getInitialSeconds('active');
+              timerStartTimeRef.current = new Date().getTime();
+              return;
+            case 'active': //Active is done, check if more rounds to go, set rest else finish
+              if (currentInterval < selectedTimer.intervalCount) {
+                //More rounrs to go, set rest
+                playSound('reset');
+                setTimerState('rest');
+                setSecondsLeft(getInitialSeconds('rest'));
+                timerDurationRef.current = getInitialSeconds('rest');
+                timerStartTimeRef.current = new Date().getTime();
+                return;
+              } else {
+                setTimerState('finished');
+                BackgroundTimer.stopBackgroundTimer(); // Stop the timer
+                setShowFinishedDialog(true);
+                reset();
+                if (appState !== 'active') {
+                  PushNotification.localNotification({
+                    channelId: 'channel-id',
+                    title: 'Timer Finished',
+                    message: 'Your timer has finished. Great job!', // Customize your message
+                  });
                 }
-              case 'rest': //Rest is done, start active
-                setCurrentInterval((prevInterval) => prevInterval + 1);
-                setTimerState('active');
-                return getInitialSeconds('active');
-            }
+                return;
+              }
+            case 'rest': //Rest is done, start active
+              setCurrentInterval((prevInterval) => prevInterval + 1);
+              setTimerState('active');
+              setSecondsLeft(getInitialSeconds('active'));
+              timerDurationRef.current = getInitialSeconds('active');
+              timerStartTimeRef.current = new Date().getTime();
+              return;
           }
-          return getInitialSeconds(timerState);
-        });
-      }, 1000);
+        }
+      }, TIMER_CHECK_INTERVAL);
     };
 
     if (!isPaused) {
@@ -208,7 +233,7 @@ export const TimerScreen = () => {
     return () => {
       BackgroundTimer.stopBackgroundTimer();
     };
-  }, [isPaused, timerState, currentInterval, secondsLeft]);
+  }, [isPaused, secondsLeft]);
 
   // Function to get initial seconds based on timer state
   function getInitialSeconds(state: TimerStates): number {
@@ -230,6 +255,9 @@ export const TimerScreen = () => {
     setTimerState('warmup');
     setCurrentInterval(1);
     setSecondsLeft(getInitialSeconds('warmup'));
+    timerDurationRef.current = getInitialSeconds('warmup');
+    timerStartTimeRef.current = null;
+    timerPauseTimeRef.current = null;
   };
 
   const getHeaderText = (state: TimerStates) => {
@@ -243,6 +271,21 @@ export const TimerScreen = () => {
       case 'finished':
         return 'Finished';
     }
+  };
+
+  //Need to adjust the timer start time stamp to account for the time paused
+  const handlePause = () => {
+    setIsPaused(true);
+    timerPauseTimeRef.current = new Date().getTime();
+  };
+
+  //Need to adjust the timer start time stamp to account for the time paused
+  const handleResume = () => {
+    setIsPaused(false);
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - timerPauseTimeRef.current;
+    timerStartTimeRef.current += elapsedTime;
+    timerPauseTimeRef.current = null;
   };
 
   return (
@@ -327,11 +370,9 @@ export const TimerScreen = () => {
                   if (!(timerState === 'warmup' && secondsLeft === selectedTimer.warmupTime)) {
                     playSound(!isPaused ? 'stopped' : 'returned', true);
                   } else {
-                    //Need to startup sound as well as trigger first seconds sounds here
-                    playSound('buckle_up');
                     handleTimerAudio(secondsLeft);
                   }
-                  setIsPaused((prev) => !prev);
+                  isPaused ? handleResume() : handlePause();
                 },
               }}
             />
