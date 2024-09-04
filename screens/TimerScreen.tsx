@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, AppState, AppStateStatus, View, StyleSheet, ScrollView } from 'react-native';
+import { Text, AppState, AppStateStatus, View, StyleSheet, ScrollView, NativeModules } from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import { formatTime } from '../utils/FormatTime';
@@ -45,6 +45,7 @@ export const TimerScreen = () => {
 
   const [appState, setAppState] = useState(AppState.currentState);
   const { playSound } = useSound();
+  const { ForegroundService } = NativeModules;
 
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
 
@@ -74,8 +75,16 @@ export const TimerScreen = () => {
     const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     // Return a cleanup function that removes the event listener
-    return () => subscription.remove();
+    return () => {
+      subscription.remove(); // Stop the service
+      ForegroundService.stopService();
+    };
   }, []);
+
+  // Start the service when the app is in the background it will continue
+  useEffect(() => {
+    isPaused === true ? ForegroundService.stopService() : ForegroundService.startService();
+  }, [isPaused]);
 
   useEffect(() => {
     if (!isPaused) {
@@ -114,7 +123,7 @@ export const TimerScreen = () => {
     }
   };
 
-  //Need a function to determine what audio to play when transitioning between states at the end of each timer (warmup, active, rest)
+  // Need a function to determine what audio to play when transitioning between states at the end of each timer (warmup, active, rest)
   const handleRoundTransitionAudio = () => {
     //This is an edge case for 1 round
     if (timerState === 'warmup') {
@@ -172,14 +181,21 @@ export const TimerScreen = () => {
         if (!startTimeStamp) {
           const initStartTime = new Date().getTime();
           timerStartTimeRef.current = initStartTime;
+          startTimeStamp = initStartTime;
         }
 
+        // Get the current time and calculate the elapsed time. Compared the elapsed time and compare it to the timer duration.
         const currentTime = new Date().getTime();
         const elapsedTime = currentTime - startTimeStamp;
         const remainingTime = timerDurationRef.current - Math.floor(elapsedTime / 1000);
 
-        console.log('BG - timer state:', timerState, '---remaining time:', remainingTime, '---app state:', appState);
+        //If there is no change in the remaining time, return.
+        if (remainingTime === secondsLeft) {
+          return;
+        }
+
         if (remainingTime >= 0) {
+          console.log(`Current Interval: ${currentInterval}, Timer State: ${timerState}, Time Left: ${remainingTime}`);
           setSecondsLeft(remainingTime);
         } else {
           switch (timerState) {
@@ -225,6 +241,7 @@ export const TimerScreen = () => {
     };
 
     if (!isPaused) {
+      // Start the native service that will make sure the app continues to run in the background when the phone is locked
       startTimer();
     } else {
       BackgroundTimer.stopBackgroundTimer();
@@ -273,13 +290,13 @@ export const TimerScreen = () => {
     }
   };
 
-  //Need to adjust the timer start time stamp to account for the time paused
+  // Need to record the paused time to adjust the timer start time stamp when resumed
   const handlePause = () => {
     setIsPaused(true);
     timerPauseTimeRef.current = new Date().getTime();
   };
 
-  //Need to adjust the timer start time stamp to account for the time paused
+  // Get the elapsed time of the puasedtime, and then add that to the start time to get the new start time for resuming.
   const handleResume = () => {
     setIsPaused(false);
     const currentTime = new Date().getTime();
