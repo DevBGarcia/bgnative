@@ -2,6 +2,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:textColor">@android:color/black</item>
         <!-- Other theme customizations -->
+        <item name="android:windowIsTranslucent">true</item>    
     </style>
 
     <!-- Custom Dialog Theme -->
